@@ -1,6 +1,7 @@
 import 'package:expense_tracker/helpers/db_helper.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 
 class TransactionsProvider with ChangeNotifier {
   List<Transaction> _transactions = [];
@@ -24,11 +25,28 @@ class TransactionsProvider with ChangeNotifier {
     final dataList = await DBHelper.getData('transactions');
     _transactions = dataList.map((item) => Transaction(
       id: item['id'],
-      type: item['type'], 
+      type: TransactionType.values[item['type']], 
       amount: item['amount'], 
-      date: item['date'], 
+      date: DateTime.parse(item['date']), 
       description: item['description'])
     ).toList();
     notifyListeners();
+  }
+
+  Map<String, List<Transaction>> groupByWeekYear() {
+    var groupedTransaction = <String, List<Transaction>>{};
+    for (var transaction in _transactions) {
+      int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;
+      int year = Jiffy.parseFromDateTime(transaction.date).year;
+      String key = "$year-$weekYear";
+      if(groupedTransaction.containsKey(key)) {
+        groupedTransaction[key]!.add(transaction);
+      }
+      else {
+        groupedTransaction[key] = [transaction];
+      }
+    }
+    
+    return groupedTransaction;
   }
 }

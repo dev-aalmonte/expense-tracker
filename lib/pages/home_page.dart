@@ -2,6 +2,7 @@ import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -24,13 +25,20 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 4,),
           Expanded(
-            child: Consumer<TransactionsProvider>(
-              builder: (context, provider, child) => ListView.builder(
-                itemCount: provider.transactions.length > 4 ? 4 : provider.transactions.length,
-                itemBuilder: (context, index) => _recentTransactions(),
-              ),
-              child: const Center(
-                child: Text("We have no transaction to show")
+            child: FutureBuilder(
+              future: Provider.of<TransactionsProvider>(context).fetchTransactions(),
+              builder: (context, snapshot) => Consumer<TransactionsProvider>(
+                builder: (context, provider, child) => ListView.builder(
+                  itemCount: provider.transactions.length > 4 ? 4 : provider.transactions.length,
+                  itemBuilder: (context, index) => _recentTransactions(
+                    isDeposit: provider.transactions[index].type.index,
+                    amount: provider.transactions[index].amount,
+                    date: provider.transactions[index].date
+                  ),
+                ),
+                child: const Center(
+                  child: Text("We have no transaction to show")
+                ),
               ),
             ),
           )
@@ -143,15 +151,19 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Card _recentTransactions() {
+  Card _recentTransactions({
+    required int isDeposit,
+    required double amount,
+    required DateTime date
+  }) {
     return Card(
       child: ListTile(
-        leading: const  SizedBox(
+        leading: SizedBox(
           height: double.infinity,  
-          child: Icon(Icons.arrow_upward)
+          child: Icon(isDeposit == 0 ? Icons.arrow_upward : Icons.arrow_downward)
         ),
-        title: Text(toCurrencyString("500.00", leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
-        subtitle: const Text("60/60/6060"),
+        title: Text(toCurrencyString(amount.toString(), leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
+        subtitle: Text(DateFormat("M/d/y").format(date)),
       ),
     );
   }
