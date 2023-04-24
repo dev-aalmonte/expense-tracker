@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -56,7 +58,7 @@ class _TransactionItemState extends State<TransactionItem> {
           curve: Curves.easeIn,
           constraints: BoxConstraints(
             minHeight: _expanded ? 70 : 0,
-            maxHeight: _expanded ? (74.0 * transactions.length) : 0
+            maxHeight: _expanded ? min(74.0 * transactions.length, 74 * 3) : 0
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: ListView.builder(
