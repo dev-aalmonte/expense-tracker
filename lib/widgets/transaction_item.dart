@@ -55,7 +55,7 @@ class _TransactionItemState extends State<TransactionItem> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeIn,
           constraints: BoxConstraints(
-            minHeight: _expanded ? 80 : 0,
+            minHeight: _expanded ? 70 : 0,
             maxHeight: _expanded ? (74.0 * transactions.length) : 0
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
