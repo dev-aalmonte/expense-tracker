@@ -12,11 +12,6 @@ class TabsPage extends StatefulWidget {
 
 class _TabsPageState extends State<TabsPage> {
   int _selectedIndex = 1;
-  final List<Widget> _pagesList = [
-    TransactionsPage(),
-    const HomePage(),
-    const AddTransactionPage()
-  ];
   final List<String> _pagesTitle = [
     "Transactions",
     "Dashboard",
@@ -35,7 +30,11 @@ class _TabsPageState extends State<TabsPage> {
       appBar: AppBar(
         title: Text(_pagesTitle[_selectedIndex]),
       ),
-      body: _pagesList[_selectedIndex],
+      body: [
+        TransactionsPage(),
+        const HomePage(),
+        AddTransactionPage(changePage: () => _selectPage(1),)
+      ][_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _selectPage,

@@ -28,16 +28,24 @@ class HomePage extends StatelessWidget {
             child: FutureBuilder(
               future: Provider.of<TransactionsProvider>(context).fetchTransactions(),
               builder: (context, snapshot) => Consumer<TransactionsProvider>(
-                builder: (context, provider, child) => ListView.builder(
+                builder: (context, provider, child) => provider.transactions.isNotEmpty ? ListView.builder(
                   itemCount: provider.transactions.length > 4 ? 4 : provider.transactions.length,
                   itemBuilder: (context, index) => _recentTransactions(
                     isDeposit: provider.transactions[index].type.index,
                     amount: provider.transactions[index].amount,
                     date: provider.transactions[index].date
+                  )
+                ) : child!,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, size: 52,),
+                      const SizedBox(height: 10,),
+                      Text("Sorry, no data to be shown!", style: Theme.of(context).textTheme.titleMedium,)
+                    ],
                   ),
-                ),
-                child: const Center(
-                  child: Text("We have no transaction to show")
                 ),
               ),
             ),

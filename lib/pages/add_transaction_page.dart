@@ -7,7 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+  final Function changePage;
+
+  const AddTransactionPage({
+    super.key,
+    required this.changePage
+  });
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -31,6 +36,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   }
 
   void _submitForm() {
+    FocusManager.instance.primaryFocus?.unfocus();
     Provider.of<TransactionsProvider>(context, listen: false).addTransaction(
       Transaction(
         type: _isDeposit ? TransactionType.deposit : TransactionType.spent, 
@@ -39,6 +45,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         description: _descriptionController.text
       )
     );
+    widget.changePage();
   }
 
   void _selectDate() async {

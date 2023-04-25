@@ -14,7 +14,9 @@ class TransactionsPage extends StatelessWidget {
     return Consumer<TransactionsProvider>(
       builder: (context, provider, child) {
         final Map<String, List<Transaction>> groupedTransactions = provider.groupByWeekYear();
-        return ListView.builder(
+        final dataLength = provider.transactions.length;
+        return dataLength > 0 
+        ? ListView.builder(
           itemCount: groupedTransactions.length,
           itemBuilder: (context, index) {
             String key = groupedTransactions.keys.elementAt(index);
@@ -24,16 +26,18 @@ class TransactionsPage extends StatelessWidget {
               ),
             );
           } 
-        );
+        ) 
+        : child!;
       } ,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Icon(Icons.error_outline),
-          SizedBox(height: 10,),
-          Text("Sorry, no data to be shown!")
-        ],
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64,),
+            const SizedBox(height: 10,),
+            Text("Sorry, no data to be shown!", style: Theme.of(context).textTheme.titleLarge,)
+          ],
+        ),
       ),
     );
   }
