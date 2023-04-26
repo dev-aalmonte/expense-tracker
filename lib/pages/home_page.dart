@@ -55,41 +55,43 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Padding _expensesCard(BuildContext context) {
+  Padding _expensesCard(BuildContext context){
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _expenseLabel(context, label: "Available", value: 1000, color: Colors.green),
-                  Expanded(
-                    child: SizedBox(
-                      height: 200,
-                      width: 150,
-                      child: Stack(
-                        children: [
-                          _expenseChartLabel(context),
-                          _expenseChart()
-                        ] 
+          child: Consumer<TransactionsProvider>(
+            builder: (context, provider, _) => Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _expenseLabel(context, label: "Available", value: (provider.deposit - provider.spent), color: Colors.green),
+                    Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        width: 150,
+                        child: Stack(
+                          children: [
+                            _expenseChartLabel(context, provider.deposit),
+                            _expenseChart((provider.deposit - provider.spent), provider.spent)
+                          ] 
+                        ),
                       ),
                     ),
-                  ),
-                  _expenseLabel(context, label: "Spent", value: 500, color: Colors.red),
-                ],
-              )
-            ],
+                    _expenseLabel(context, label: "Spent", value: provider.spent, color: Colors.red),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Positioned _expenseChartLabel(BuildContext context) {
+  Positioned _expenseChartLabel(BuildContext context, double deposit) {
     return Positioned.fill(
       child: Align(
         alignment: Alignment.center,
@@ -101,7 +103,7 @@ class HomePage extends StatelessWidget {
                 fontWeight: FontWeight.bold
               )
             ),
-            Text(toCurrencyString("1500.00", leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
+            Text(toCurrencyString(deposit.toString(), leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
           ],
         )
       )
@@ -139,18 +141,18 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  PieChart _expenseChart() {
+  PieChart _expenseChart(double available, double spent) {
     return PieChart(
       PieChartData(
         centerSpaceRadius: 40,
         sections: [
           PieChartSectionData(
-            value: 1000,
+            value: available,
             showTitle: false,
             color: Colors.green
           ),
           PieChartSectionData(
-            value: 500,
+            value: spent,
             showTitle: false,
             color: Colors.red
           )

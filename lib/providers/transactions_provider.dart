@@ -2,12 +2,22 @@ import 'package:expense_tracker/helpers/db_helper.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionsProvider with ChangeNotifier {
+  double deposit = 0.00;
+  double spent = 0.00;
+  
   List<Transaction> _transactions = [];
 
   List<Transaction> get transactions {
     return [..._transactions];
+  }
+
+  Future<void> fetchUserDeposit() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    deposit = prefs.getDouble('deposit') ?? 0.00;
+    spent = prefs.getDouble('spent') ?? 0.00;
   }
 
   Future<void> addTransaction(Transaction transaction) async {

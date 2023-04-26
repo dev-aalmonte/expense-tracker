@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final Function changePage;
@@ -37,15 +38,27 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   void _submitForm() {
     FocusManager.instance.primaryFocus?.unfocus();
-    Provider.of<TransactionsProvider>(context, listen: false).addTransaction(
-      Transaction(
-        type: _isDeposit ? TransactionType.deposit : TransactionType.spent, 
-        amount: double.parse(_amountController.text), 
-        date: DateFormat('M/d/y').parse(_dateController.text), 
-        description: _descriptionController.text
-      )
+    final Transaction transaction = Transaction(
+      type: _isDeposit ? TransactionType.deposit : TransactionType.spent, 
+      amount: double.parse(_amountController.text), 
+      date: DateFormat('M/d/y').parse(_dateController.text), 
+      description: _descriptionController.text
     );
+    
+    Provider.of<TransactionsProvider>(context, listen: false).addTransaction(transaction);
+    _setDepositPreference(transaction);
+    
     widget.changePage();
+  }
+
+  void _setDepositPreference(Transaction transaction) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(transaction.type == TransactionType.deposit) {
+      await prefs.setDouble('deposit', double.parse(_amountController.text));
+    }
+    else {
+      await prefs.setDouble('spent', double.parse(_amountController.text));
+    }
   }
 
   void _selectDate() async {

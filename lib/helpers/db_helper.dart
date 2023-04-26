@@ -7,15 +7,21 @@ class DBHelper {
     final dbPath = await sql.getDatabasesPath();
     return sql.openDatabase(
       path.join(dbPath, 'expenses.db'), 
-      onCreate: (db, version) => 
+      onCreate: (db, version) {
         db.execute("""CREATE TABLE transactions(
                                   id INTEGER PRIMARY KEY NOT NULL, 
                                   type INTEGER NOT NULL, 
                                   amount REAL NOT NULL, 
                                   date TEXT NOT NULL, 
                                   description TEXT)
-      """)
-    , version: 1);
+        """);
+        db.execute("""CREATE TABLE user_card(
+                                  id INTEGER PRIMARY KEY NOT NULL, 
+                                  total REAL NOT NULL, 
+                                  spent REAL NOT NULL)
+        """);
+      }
+    , version: 2);
   }
 
   static Future<int> insert(String table, Map<String, dynamic> data) async {
