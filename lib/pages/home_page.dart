@@ -36,20 +36,24 @@ class HomePage extends StatelessWidget {
                     date: provider.transactions[index].date
                   )
                 ) : child!,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 52,),
-                      const SizedBox(height: 10,),
-                      Text("Sorry, no data to be shown!", style: Theme.of(context).textTheme.titleMedium,)
-                    ],
-                  ),
-                ),
+                child: _noDataWidget(context),
               ),
             ),
           )
+        ],
+      ),
+    );
+  }
+
+  Center _noDataWidget(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, size: 52,),
+          const SizedBox(height: 10,),
+          Text("Sorry, no data to be shown!", style: Theme.of(context).textTheme.titleMedium,)
         ],
       ),
     );
@@ -62,28 +66,34 @@ class HomePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Consumer<TransactionsProvider>(
-            builder: (context, provider, _) => Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _expenseLabel(context, label: "Available", value: (provider.deposit - provider.spent), color: Colors.green),
-                    Expanded(
-                      child: SizedBox(
-                        height: 200,
-                        width: 150,
-                        child: Stack(
-                          children: [
-                            _expenseChartLabel(context, provider.deposit),
-                            _expenseChart((provider.deposit - provider.spent), provider.spent)
-                          ] 
+            builder: (context, provider, child) => provider.deposit > 0.00 && provider.spent > 0.00 
+              ? Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _expenseLabel(context, label: "Available", value: (provider.deposit - provider.spent), color: Colors.green),
+                      Expanded(
+                        child: SizedBox(
+                          height: 200,
+                          width: 150,
+                          child: Stack(
+                            children: [
+                              _expenseChartLabel(context, provider.deposit),
+                              _expenseChart((provider.deposit - provider.spent), provider.spent)
+                            ] 
+                          ),
                         ),
                       ),
-                    ),
-                    _expenseLabel(context, label: "Spent", value: provider.spent, color: Colors.red),
-                  ],
-                )
-              ],
+                      _expenseLabel(context, label: "Spent", value: provider.spent, color: Colors.red),
+                    ],
+                  )
+                ],
+              )
+              : child!,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+              child: _noDataWidget(context),
             ),
           ),
         ),

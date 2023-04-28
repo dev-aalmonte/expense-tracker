@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
@@ -5,6 +6,7 @@ import 'package:sqflite/sqlite_api.dart';
 class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
+    clearData();
     return sql.openDatabase(
       path.join(dbPath, 'expenses.db'), 
       onCreate: (db, version) {
@@ -32,5 +34,14 @@ class DBHelper {
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await DBHelper.database();
     return db.query(table, orderBy: "id DESC");
+  }
+
+  static void clearData() async {
+    final dbPath = await sql.getDatabasesPath();
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    sql.deleteDatabase(path.join(dbPath, 'expenses.db'));
+    prefs.remove('deposit');
+    prefs.remove('spent');
   }
 }
