@@ -110,13 +110,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                IconButton(
+                TextButton.icon(
                   onPressed: () {
                     setState(() {
                       _isDeposit = !_isDeposit;
                     });
                   },
-                  iconSize: 32,
                   style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(
                       _isDeposit 
@@ -127,12 +126,17 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                       _isDeposit 
                       ? Theme.of(context).colorScheme.onPrimary 
                       : Theme.of(context).colorScheme.onError
-                    )
+                    ),
+                    padding: const MaterialStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: 16)
+                    ),
+                    minimumSize: const MaterialStatePropertyAll(Size(118, 42))
                   ),
                   icon: Icon(_isDeposit 
                     ? Icons.arrow_upward
                     : Icons.arrow_downward
                   ),
+                  label: Text(_isDeposit ? "Deposit" : "Expense",),
                 ),
                 const SizedBox(width: 24,),
                 Expanded(
