@@ -108,7 +108,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               ),
             ),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 TextButton.icon(
                   onPressed: () {

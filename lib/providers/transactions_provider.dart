@@ -35,9 +35,9 @@ class TransactionsProvider with ChangeNotifier {
     final dataList = await DBHelper.getData('transactions');
     _transactions = dataList.map((item) => Transaction(
       id: item['id'],
-      type: TransactionType.values[item['type']], 
-      amount: item['amount'], 
-      date: DateTime.parse(item['date']), 
+      type: TransactionType.values[item['type']],
+      amount: item['amount'],
+      date: DateTime.parse(item['date']),
       description: item['description'])
     ).toList();
     notifyListeners();

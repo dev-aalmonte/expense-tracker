@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Consumer<TransactionsProvider>(
-            builder: (context, provider, child) => provider.deposit > 0.00 && provider.spent > 0.00 
+            builder: (context, provider, child) => provider.deposit > 0.00 || provider.spent > 0.00 
               ? Column(
                 children: [
                   Row(
