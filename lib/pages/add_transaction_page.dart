@@ -1,6 +1,7 @@
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
+import 'package:expense_tracker/widgets/currency_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:intl/intl.dart';
@@ -33,6 +34,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     _actualDate = _today;
     _dateController.text = DateFormat('M/d/y').format(_today);
     _amountController.text = "0.00";
+    _amountController.selection = TextSelection.fromPosition(TextPosition(offset: _amountController.text.length));
     super.initState();
   }
 
@@ -80,33 +82,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              height: 200,
-              width: 400,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: AutoSizeTextField(
-                controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: false
-                ),
-                inputFormatters: [
-                  CurrencyInputFormatter()
-                ],
-                fullwidth: true,
-                minFontSize: 32,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                  fontSize: 62,
-                ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  prefixIcon: Icon(Icons.attach_money, size: Theme.of(context).textTheme.displayMedium!.fontSize,),
-                  contentPadding: const EdgeInsets.all(20)
-                ),
-              ),
-            ),
+            CurrencyFormField(controller: _amountController),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -175,5 +151,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _dateController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 }

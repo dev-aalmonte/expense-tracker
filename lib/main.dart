@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       value: TransactionsProvider(),
       child: MaterialApp(
         title: 'Expense Tracker',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData().copyWith(
           useMaterial3: true,
           colorScheme: kColorScheme,
