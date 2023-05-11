@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TabsPage extends StatefulWidget {
+  static const String route = '/tabs';
+
   const TabsPage({super.key});
 
   @override
@@ -25,7 +27,7 @@ class _TabsPageState extends State<TabsPage> {
       _selectedIndex = index;
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     final transactionProvider = Provider.of<TransactionsProvider>(context);

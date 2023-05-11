@@ -1,3 +1,4 @@
+import 'package:expense_tracker/pages/splash_page.dart';
 import 'package:expense_tracker/pages/tabs_page.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,10 @@ class MyApp extends StatelessWidget {
             bodySmall: ThemeData().textTheme.bodySmall!.copyWith(),
           )
         ),
-        home: const TabsPage(),
+        home: const SplashPage(),
+        routes: {
+          TabsPage.route: (context) => const TabsPage(),
+        },
       ),
     );
   }
