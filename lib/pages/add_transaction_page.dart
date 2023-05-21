@@ -1,9 +1,7 @@
-import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:expense_tracker/widgets/currency_form_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
