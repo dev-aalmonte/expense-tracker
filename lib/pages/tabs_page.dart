@@ -14,12 +14,12 @@ class TabsPage extends StatefulWidget {
 
 class _TabsPageState extends State<TabsPage> {
   int _selectedIndex = 1;
+  String _swipeDirection = "";
   final List<String> _pagesTitle = [
     "Transactions",
     "Dashboard",
     "Add Transaction"
   ];
-
 
   void _selectPage(int index) {
     setState(() {
@@ -33,11 +33,33 @@ class _TabsPageState extends State<TabsPage> {
       appBar: AppBar(
         title: Text(_pagesTitle[_selectedIndex]),
       ),
-      body: [
-        TransactionsPage(),
-        const HomePage(),
-        AddTransactionPage(changePage: () => _selectPage(1),)
-      ][_selectedIndex],
+      body: GestureDetector(
+        onHorizontalDragUpdate: (details) {
+          const int sensitivity = 4;
+          if(details.delta.dx > sensitivity && _selectedIndex > 0){
+            _swipeDirection = "left";
+          }
+          if(details.delta.dx < -sensitivity && _selectedIndex < _pagesTitle.length - 1){
+            _swipeDirection = "right";
+          }
+        },
+        onHorizontalDragEnd: (details) {
+          switch(_swipeDirection){
+            case "left":
+              _selectPage(_selectedIndex - 1);
+            break;
+            case "right": 
+              _selectPage(_selectedIndex + 1);
+            break;
+          }
+          _swipeDirection = "";
+        },
+        child: [
+          TransactionsPage(),
+          const HomePage(),
+          AddTransactionPage(changePage: () => _selectPage(1),)
+        ][_selectedIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _selectPage,
