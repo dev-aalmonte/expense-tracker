@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/widgets/transaction_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -63,20 +63,11 @@ class _TransactionItemState extends State<TransactionItem> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: ListView.builder(
             itemCount: transactions.length,
-            itemBuilder: (context, index) => ListTile(
-              leading: SizedBox(
-                height: double.infinity,
-                child: Icon(transactions[index].type.index == 0 
-                  ? Icons.arrow_upward 
-                  : Icons.arrow_downward
-                )
-              ),
-              title: Text(toCurrencyString(
-                transactions[index].amount.toStringAsFixed(2), 
-                leadingSymbol: CurrencySymbols.DOLLAR_SIGN)
-              ),
-              subtitle: Text(DateFormat("M/d/y").format(transactions[index].date)),
-            ),
+            itemBuilder: (context, index) => TransactionTile(
+              transactionType: transactions[index].type,
+              amount: transactions[index].amount,
+              date: transactions[index].date,
+            )
           ),
         )
       ],

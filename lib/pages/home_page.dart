@@ -1,8 +1,9 @@
+import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
+import 'package:expense_tracker/widgets/transaction_tile.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -31,7 +32,7 @@ class HomePage extends StatelessWidget {
                 builder: (context, provider, child) => provider.transactions.isNotEmpty ? ListView.builder(
                   itemCount: provider.transactions.length > 4 ? 4 : provider.transactions.length,
                   itemBuilder: (context, index) => _recentTransactions(
-                    isDeposit: provider.transactions[index].type.index,
+                    transactionType: provider.transactions[index].type,
                     amount: provider.transactions[index].amount,
                     date: provider.transactions[index].date
                   )
@@ -172,18 +173,15 @@ class HomePage extends StatelessWidget {
   }
 
   Card _recentTransactions({
-    required int isDeposit,
+    required TransactionType transactionType,
     required double amount,
     required DateTime date
   }) {
     return Card(
-      child: ListTile(
-        leading: SizedBox(
-          height: double.infinity,  
-          child: Icon(isDeposit == 0 ? Icons.arrow_upward : Icons.arrow_downward)
-        ),
-        title: Text(toCurrencyString(amount.toString(), leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
-        subtitle: Text(DateFormat("M/d/y").format(date)),
+      child: TransactionTile(
+        transactionType: transactionType, 
+        amount: amount, 
+        date: date
       ),
     );
   }
