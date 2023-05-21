@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:expense_tracker/helpers/db_helper.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +46,7 @@ class TransactionsProvider with ChangeNotifier {
   }
 
   Map<String, List<Transaction>> groupByWeekYear() {
+    fetchTransactions();
     var groupedTransaction = <String, List<Transaction>>{};
     for (var transaction in _transactions) {
       int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;

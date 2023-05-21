@@ -16,16 +16,19 @@ class TransactionsPage extends StatelessWidget {
         final Map<String, List<Transaction>> groupedTransactions = provider.groupByWeekYear();
         final dataLength = provider.transactions.length;
         return dataLength > 0 
-        ? ListView.builder(
-          itemCount: groupedTransactions.length,
-          itemBuilder: (context, index) {
-            String key = groupedTransactions.keys.elementAt(index);
-            return Card(
-              child: TransactionItem(
-                groupTransaction: groupedTransactions[key]!,
-              ),
-            );
-          } 
+        ? RefreshIndicator(
+          onRefresh: provider.fetchTransactions,
+          child: ListView.builder(
+            itemCount: groupedTransactions.length,
+            itemBuilder: (context, index) {
+              String key = groupedTransactions.keys.elementAt(index);
+              return Card(
+                child: TransactionItem(
+                  groupTransaction: groupedTransactions[key]!,
+                ),
+              );
+            } 
+          ),
         ) 
         : child!;
       } ,

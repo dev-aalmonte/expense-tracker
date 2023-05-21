@@ -19,7 +19,10 @@ class HomePage extends StatelessWidget {
           Text("My Expenses",
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          _expensesCard(context),
+          FutureBuilder(
+            future: Provider.of<TransactionsProvider>(context).fetchUserDeposit(),
+            builder: (context, snapshot) => _expensesCard(context)
+          ),
           const SizedBox(height: 4,),
           Text("Recent Transactions",
             style: Theme.of(context).textTheme.titleLarge,
