@@ -1,16 +1,17 @@
-# expense_tracker
+# Expense Tracker App
 
-A new Flutter project.
+This mobile application will let you register transactions and keep track on how much you spent every week. 
 
-## Getting Started
+## Instalation (Developer only)
 
-This project is a starting point for a Flutter application.
+Prerequisites :
+    - Flutter SDK (3.7+)
+    - Android Studio or Android Phone in Developer Mode
+    - Android 13+ on the Android Virtual Device or your Android Phone
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To execute the code follow these steps on VSCode:
+    1. Clone this repository
+    2. Execute `flutter pub get` from the root of the application to get dependencies
+    3. Open an the Android Virtual Device or connect your Android Device
+    4. Select your Android Device
+    5. Click on `Run -> Start Debugging (F5)` or  `Run -> Run Without Debugging (CTRL + F5)` from the menu to run the application

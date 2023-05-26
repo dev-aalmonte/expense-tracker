@@ -24,11 +24,11 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(Icons.calculate, size: 64,),
             SizedBox(height: 8,),
             Text("Getting your data optimized...", style: TextStyle(
