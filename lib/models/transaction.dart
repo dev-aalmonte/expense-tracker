@@ -1,20 +1,28 @@
-enum TransactionType {
-  deposit,
-  spent
+enum TransactionType { deposit, spent }
+
+enum Categories {
+  bill,
+  gaming,
+  food,
+  insurance,
+  investment,
+  maintenance,
 }
 
 class Transaction {
   late int? id;
-  final TransactionType type; 
+  final TransactionType type;
   final double amount;
   final DateTime date;
-  final String description;
+  final Categories? category;
+  final String? description;
 
   Transaction({
     this.id,
     required this.type,
     required this.amount,
     required this.date,
-    required this.description,
+    this.category,
+    this.description,
   });
 }
