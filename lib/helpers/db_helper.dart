@@ -7,23 +7,22 @@ class DBHelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
     // clearData();
-    return sql.openDatabase(
-      path.join(dbPath, 'expenses.db'), 
-      onCreate: (db, version) {
-        db.execute("""CREATE TABLE transactions(
+    return sql.openDatabase(path.join(dbPath, 'expenses.db'),
+        onCreate: (db, version) {
+      db.execute("""CREATE TABLE transactions(
                                   id INTEGER PRIMARY KEY NOT NULL, 
-                                  type INTEGER NOT NULL, 
+                                  type INTEGER NOT NULL,
                                   amount REAL NOT NULL, 
-                                  date TEXT NOT NULL, 
+                                  date TEXT NOT NULL,
+                                  category INTEGER,
                                   description TEXT)
         """);
-        db.execute("""CREATE TABLE user_card(
+      db.execute("""CREATE TABLE user_card(
                                   id INTEGER PRIMARY KEY NOT NULL, 
                                   total REAL NOT NULL, 
                                   spent REAL NOT NULL)
         """);
-      }
-    , version: 2);
+    }, version: 3);
   }
 
   static Future<int> insert(String table, Map<String, dynamic> data) async {
