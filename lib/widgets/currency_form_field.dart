@@ -5,17 +5,13 @@ import 'package:flutter/services.dart';
 class CurrencyFormField extends StatefulWidget {
   final TextEditingController controller;
 
-  const CurrencyFormField({
-    super.key,
-    required this.controller
-  });
+  const CurrencyFormField({super.key, required this.controller});
 
   @override
   State<CurrencyFormField> createState() => _CurrencyFormFieldState();
 }
 
 class _CurrencyFormFieldState extends State<CurrencyFormField> {
-
   @override
   void initState() {
     widget.controller.addListener(() {
@@ -34,33 +30,31 @@ class _CurrencyFormFieldState extends State<CurrencyFormField> {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Container(
-      height: 200,
-      width: 400,
+      height: 150,
+      width: 300,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       child: AutoSizeTextField(
         controller: widget.controller,
-        keyboardType: const TextInputType.numberWithOptions(
-          decimal: true,
-          signed: false
-        ),
-        inputFormatters: [
-          MyCurrencyInputFormatter()
-        ],
+        keyboardType:
+            const TextInputType.numberWithOptions(decimal: true, signed: false),
+        inputFormatters: [MyCurrencyInputFormatter()],
         fullwidth: true,
         minFontSize: 32,
         maxLines: 1,
         textAlign: TextAlign.center,
         textDirection: TextDirection.rtl, // Right to left
         style: Theme.of(context).textTheme.displayLarge!.copyWith(
-          fontSize: 62,
-        ),
+              fontSize: 62,
+            ),
         decoration: InputDecoration(
-          border: InputBorder.none,
-          prefixIcon: Icon(Icons.attach_money, size: Theme.of(context).textTheme.displayMedium!.fontSize,),
-          contentPadding: const EdgeInsets.all(20)
-        ),
+            border: InputBorder.none,
+            prefixIcon: Icon(
+              Icons.attach_money,
+              size: Theme.of(context).textTheme.displayMedium!.fontSize,
+            ),
+            contentPadding: const EdgeInsets.all(20)),
         onTap: _moveCursorToEnd,
       ),
     );
@@ -70,13 +64,13 @@ class _CurrencyFormFieldState extends State<CurrencyFormField> {
 class MyCurrencyInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue, TextEditingValue newValue) {
-      String newText = newValue.text.replaceAll(".", "");
-      double numericValue = double.tryParse(newText) ?? 0.0;
-      String formattedValue = (numericValue / 100).toStringAsFixed(2);
-      return TextEditingValue (
-        text: formattedValue,
-        selection: TextSelection.collapsed(offset: formattedValue.length),
-      );
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    String newText = newValue.text.replaceAll(".", "");
+    double numericValue = double.tryParse(newText) ?? 0.0;
+    String formattedValue = (numericValue / 100).toStringAsFixed(2);
+    return TextEditingValue(
+      text: formattedValue,
+      selection: TextSelection.collapsed(offset: formattedValue.length),
+    );
   }
 }

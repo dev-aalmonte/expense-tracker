@@ -9,6 +9,15 @@ enum Categories {
   maintenance,
 }
 
+extension ParseToString on Categories {
+  String toShortString() {
+    String categoryString = toString().split('.').last;
+    String firstLetterUpper = categoryString[0].toUpperCase();
+    categoryString = categoryString.replaceRange(0, 1, firstLetterUpper);
+    return categoryString;
+  }
+}
+
 class Transaction {
   late int? id;
   final TransactionType type;
