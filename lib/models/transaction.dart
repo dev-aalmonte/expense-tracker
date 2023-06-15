@@ -6,7 +6,14 @@ enum Categories {
   food,
   insurance,
   investment,
-  maintenance,
+  maintenance;
+
+  static Categories? fromName(String name) {
+    for (Categories category in Categories.values) {
+      if (category.name == name) return category;
+    }
+    return null;
+  }
 }
 
 extension ParseToString on Categories {

@@ -39,24 +39,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     FocusManager.instance.primaryFocus?.unfocus();
     final Transaction transaction = Transaction(
         type: _isDeposit ? TransactionType.deposit : TransactionType.spent,
+        category: Categories.fromName(category.toLowerCase()),
         amount: double.parse(_amountController.text),
         date: DateFormat('M/d/y').parse(_dateController.text),
         description: _descriptionController.text);
 
     Provider.of<TransactionsProvider>(context, listen: false)
         .addTransaction(transaction);
-    _setDepositPreference(transaction);
 
     widget.changePage();
-  }
-
-  void _setDepositPreference(Transaction transaction) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (transaction.type == TransactionType.deposit) {
-      await prefs.setDouble('deposit', double.parse(_amountController.text));
-    } else {
-      await prefs.setDouble('spent', double.parse(_amountController.text));
-    }
   }
 
   void _selectDate() async {

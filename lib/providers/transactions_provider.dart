@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TransactionsProvider with ChangeNotifier {
   double deposit = 0.00;
   double spent = 0.00;
-  
+
   List<Transaction> _transactions = [];
 
   List<Transaction> get transactions {
@@ -23,25 +23,45 @@ class TransactionsProvider with ChangeNotifier {
   }
 
   Future<void> addTransaction(Transaction transaction) async {
-    transaction.id = await DBHelper.insert('transactions', {
+    var transactionObject = {
       "type": transaction.type.index,
       "amount": transaction.amount,
       "date": transaction.date.toIso8601String(),
       "description": transaction.description
-    });
+    };
+
+    if (transaction.type == TransactionType.spent) {
+      transactionObject['category'] = transaction.category!.index;
+    }
+
+    transaction.id = await DBHelper.insert('transactions', transactionObject);
     _transactions.add(transaction);
+    _setDepositPreference(transaction);
+
     notifyListeners();
+  }
+
+  void _setDepositPreference(Transaction transaction) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    fetchUserDeposit();
+
+    if (transaction.type == TransactionType.deposit) {
+      await prefs.setDouble('deposit', deposit + transaction.amount);
+    } else {
+      await prefs.setDouble('spent', spent + transaction.amount);
+    }
   }
 
   Future<void> fetchTransactions() async {
     final dataList = await DBHelper.getData('transactions');
-    _transactions = dataList.map((item) => Transaction(
-      id: item['id'],
-      type: TransactionType.values[item['type']],
-      amount: item['amount'],
-      date: DateTime.parse(item['date']),
-      description: item['description'])
-    ).toList();
+    _transactions = dataList
+        .map((item) => Transaction(
+            id: item['id'],
+            type: TransactionType.values[item['type']],
+            amount: item['amount'],
+            date: DateTime.parse(item['date']),
+            description: item['description']))
+        .toList();
     notifyListeners();
   }
 
@@ -52,14 +72,13 @@ class TransactionsProvider with ChangeNotifier {
       int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;
       int year = Jiffy.parseFromDateTime(transaction.date).year;
       String key = "$year-$weekYear";
-      if(groupedTransaction.containsKey(key)) {
+      if (groupedTransaction.containsKey(key)) {
         groupedTransaction[key]!.add(transaction);
-      }
-      else {
+      } else {
         groupedTransaction[key] = [transaction];
       }
     }
-    
+
     return groupedTransaction;
   }
 }
