@@ -8,10 +8,7 @@ import 'package:jiffy/jiffy.dart';
 
 class TransactionItem extends StatefulWidget {
   final List<Transaction> groupTransaction;
-  const TransactionItem({
-    super.key,
-    required this.groupTransaction
-  });
+  const TransactionItem({super.key, required this.groupTransaction});
 
   @override
   State<TransactionItem> createState() => _TransactionItemState();
@@ -22,18 +19,17 @@ class _TransactionItemState extends State<TransactionItem> {
 
   @override
   Widget build(BuildContext context) {
-
     final List<Transaction> transactions = widget.groupTransaction;
-    final firstDayOfWeek = DateFormat('MMMd')
-      .format(transactions[0].date.subtract(
-        Duration(days: 7 - (8 - Jiffy.parseFromDateTime(transactions[0].date).dayOfWeek) )
-      ) 
-    );
-    final lastDayOfWeek = DateFormat('MMMd')
-      .format(transactions[0].date.add(
-        Duration(days: 7 - Jiffy.parseFromDateTime(transactions[0].date).dayOfWeek)
-      ) 
-    );
+    final firstDayOfWeek = DateFormat('MMMd').format(transactions[0]
+        .date
+        .subtract(Duration(
+            days: 7 -
+                (8 -
+                    Jiffy.parseFromDateTime(transactions[0].date).dayOfWeek))));
+    final lastDayOfWeek = DateFormat('MMMd').format(transactions[0].date.add(
+        Duration(
+            days:
+                7 - Jiffy.parseFromDateTime(transactions[0].date).dayOfWeek)));
 
     return Column(
       children: [
@@ -49,7 +45,8 @@ class _TransactionItemState extends State<TransactionItem> {
               child: Text(DateFormat('y').format(transactions[0].date)),
             ),
             title: Text("$firstDayOfWeek - $lastDayOfWeek"),
-            subtitle: Text("Week: ${Jiffy.parseFromDateTime(transactions[0].date).weekOfYear}"),
+            subtitle: Text(
+                "Week: ${Jiffy.parseFromDateTime(transactions[0].date).weekOfYear}"),
             trailing: const Icon(Icons.keyboard_arrow_down),
           ),
         ),
@@ -57,18 +54,18 @@ class _TransactionItemState extends State<TransactionItem> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeIn,
           constraints: BoxConstraints(
-            minHeight: _expanded ? 70 : 0,
-            maxHeight: _expanded ? min(74.0 * transactions.length, 74 * 3) : 0
-          ),
+              minHeight: _expanded ? 70 : 0,
+              maxHeight:
+                  _expanded ? min(74.0 * transactions.length, 74 * 3) : 0),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           child: ListView.builder(
-            itemCount: transactions.length,
-            itemBuilder: (context, index) => TransactionTile(
-              transactionType: transactions[index].type,
-              amount: transactions[index].amount,
-              date: transactions[index].date,
-            )
-          ),
+              itemCount: transactions.length,
+              itemBuilder: (context, index) => TransactionTile(
+                    transactionType: transactions[index].type,
+                    category: transactions[index].category,
+                    amount: transactions[index].amount,
+                    date: transactions[index].date,
+                  )),
         )
       ],
     );

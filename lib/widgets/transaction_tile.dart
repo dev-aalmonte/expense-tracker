@@ -6,20 +6,24 @@ import 'package:intl/intl.dart';
 class TransactionTile extends StatelessWidget {
   final TransactionType transactionType;
   final double amount;
-  final DateTime date; 
+  final DateTime date;
+  final Categories? category;
+
   const TransactionTile({
     super.key,
     required this.transactionType,
     required this.amount,
-    required this.date
+    required this.date,
+    this.category,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     late MaterialColor iconColor;
     late IconData icon;
 
-    switch(transactionType){
+    switch (transactionType) {
       case TransactionType.deposit:
         icon = Icons.arrow_upward;
         iconColor = Colors.green;
@@ -32,11 +36,37 @@ class TransactionTile extends StatelessWidget {
 
     return ListTile(
       leading: SizedBox(
-        height: double.infinity,  
-        child: Icon(icon, color: iconColor)
+        height: double.infinity,
+        child: Icon(icon, color: iconColor),
       ),
-      title: Text(toCurrencyString(amount.toString(), leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
+      title: Text(toCurrencyString(amount.toString(),
+          leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
       subtitle: Text(DateFormat("M/d/y").format(date)),
+      trailing: category != null
+          ? DecoratedBox(
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 5, bottom: 5),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: colorScheme.primary,
+                      radius: 10,
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Text(category!.toShortString()),
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

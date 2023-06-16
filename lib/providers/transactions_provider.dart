@@ -58,6 +58,9 @@ class TransactionsProvider with ChangeNotifier {
         .map((item) => Transaction(
             id: item['id'],
             type: TransactionType.values[item['type']],
+            category: item['category'] != null
+                ? Categories.values[item['category']]
+                : null,
             amount: item['amount'],
             date: DateTime.parse(item['date']),
             description: item['description']))
