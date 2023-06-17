@@ -68,17 +68,27 @@ class TransactionsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, List<Transaction>> groupByWeekYear() {
+  Map<String, dynamic> groupByWeekYear() {
     fetchTransactions();
-    var groupedTransaction = <String, List<Transaction>>{};
+    var groupedTransaction = <String, dynamic>{};
     for (var transaction in _transactions) {
       int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;
       int year = Jiffy.parseFromDateTime(transaction.date).year;
+      double sum = 0;
       String key = "$year-$weekYear";
+      int positiveNegative =
+          transaction.type == TransactionType.deposit ? 1 : -1;
+
       if (groupedTransaction.containsKey(key)) {
-        groupedTransaction[key]!.add(transaction);
+        groupedTransaction[key]['sumAmount'] +=
+            transaction.amount * positiveNegative;
+        groupedTransaction[key]['transactions'].add(transaction);
       } else {
-        groupedTransaction[key] = [transaction];
+        groupedTransaction[key] = {};
+
+        sum = transaction.amount * positiveNegative;
+        groupedTransaction[key]['sumAmount'] = sum;
+        groupedTransaction[key]['transactions'] = [transaction];
       }
     }
 
