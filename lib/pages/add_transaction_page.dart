@@ -6,9 +6,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  final Function changePage;
+  static const String route = '/transactions';
+  final Function? changePage;
 
-  const AddTransactionPage({super.key, required this.changePage});
+  const AddTransactionPage({super.key, this.changePage});
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -46,7 +47,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     Provider.of<TransactionsProvider>(context, listen: false)
         .addTransaction(transaction);
 
-    widget.changePage();
+    if (widget.changePage != null) {
+      widget.changePage!();
+    } else {
+      Navigator.pop(context);
+    }
   }
 
   void _selectDate() async {
@@ -61,48 +66,53 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _depositExpenseSelectorWidget(context),
-            CurrencyFormField(controller: _amountController),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (!_isDeposit) ...[
-                  _selectCategoryWidget(),
-                  const SizedBox(
-                    width: 24,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Add Transaction"),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _depositExpenseSelectorWidget(context),
+              CurrencyFormField(controller: _amountController),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (!_isDeposit) ...[
+                    _selectCategoryWidget(),
+                    const SizedBox(
+                      width: 24,
+                    ),
+                  ],
+                  Expanded(
+                    child: TextField(
+                      onTap: () {
+                        _selectDate();
+                      },
+                      controller: _dateController,
+                      readOnly: true,
+                      decoration: const InputDecoration(labelText: 'Date'),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ],
-                Expanded(
-                  child: TextField(
-                    onTap: () {
-                      _selectDate();
-                    },
-                    controller: _dateController,
-                    readOnly: true,
-                    decoration: const InputDecoration(labelText: 'Date'),
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ),
-              ],
-            ),
-            TextField(
-              controller: _descriptionController,
-              maxLines: 3,
-              decoration: const InputDecoration(labelText: 'Description'),
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(
-              height: 24,
-            ),
-            ElevatedButton(
-                onPressed: _submitForm, child: const Text('Add Transaction'))
-          ],
+              ),
+              TextField(
+                controller: _descriptionController,
+                maxLines: 3,
+                decoration: const InputDecoration(labelText: 'Description'),
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              ElevatedButton(
+                  onPressed: _submitForm, child: const Text('Add Transaction'))
+            ],
+          ),
         ),
       ),
     );

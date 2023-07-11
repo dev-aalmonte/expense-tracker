@@ -74,9 +74,11 @@ class ChartPage extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 200,
-                    child: PieChart(PieChartData(
-                      sections: getExpensesPerCategoryChartData(context),
-                    )),
+                    child: PieChart(
+                      PieChartData(
+                        sections: getExpensesPerCategoryChartData(context),
+                      ),
+                    ),
                   )
                 ],
               ),

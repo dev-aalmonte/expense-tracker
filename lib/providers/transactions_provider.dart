@@ -74,7 +74,6 @@ class TransactionsProvider with ChangeNotifier {
     for (var transaction in _transactions) {
       int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;
       int year = Jiffy.parseFromDateTime(transaction.date).year;
-      double sum = 0;
       String key = "$year-$weekYear";
       int positiveNegative =
           transaction.type == TransactionType.deposit ? 1 : -1;
@@ -98,15 +97,29 @@ class TransactionsProvider with ChangeNotifier {
     List<Map<String, dynamic>> expensesData = [];
     int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
     int year = Jiffy.parseFromDateTime(DateTime.now()).year;
-    int min = -2;
-    int max = 2;
-    int actual = -2;
+    int max = 2; // Maximum week Lookout (Relative to the actual week)
     Map<String, dynamic> groupedTransactions = groupByWeekYear();
-    String key = "$year-$weekYear";
 
-    for (actual; actual <= max; actual++) {
+    for (int actual = -2; actual <= max; actual++) {
+      String key = "$year-${weekYear - actual}";
+
+      List<Transaction> weeklyTransactions = groupedTransactions[key] == null
+          ? []
+          : [...groupedTransactions[key]['transactions']];
+
+      double deposit = 0;
+      double spent = 0;
+
+      for (var transaction in weeklyTransactions) {
+        if (transaction.category == null) {
+          deposit += transaction.amount;
+        } else {
+          spent += transaction.amount;
+        }
+      }
+
       expensesData.add(
-        {'deposit': 100.00, 'spent': 10.00, 'weekYear': weekYear - actual},
+        {'deposit': deposit, 'spent': spent, 'weekYear': weekYear - actual},
       );
     }
 
