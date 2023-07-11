@@ -79,19 +79,37 @@ class TransactionsProvider with ChangeNotifier {
       int positiveNegative =
           transaction.type == TransactionType.deposit ? 1 : -1;
 
-      if (groupedTransaction.containsKey(key)) {
-        groupedTransaction[key]['sumAmount'] +=
-            transaction.amount * positiveNegative;
-        groupedTransaction[key]['transactions'].add(transaction);
-      } else {
-        groupedTransaction[key] = {};
-
-        sum = transaction.amount * positiveNegative;
-        groupedTransaction[key]['sumAmount'] = sum;
-        groupedTransaction[key]['transactions'] = [transaction];
+      if (!groupedTransaction.containsKey(key)) {
+        groupedTransaction[key] = {
+          'sumAmount': 0,
+          'transactions': [],
+        };
       }
+
+      groupedTransaction[key]['sumAmount'] +=
+          transaction.amount * positiveNegative;
+      groupedTransaction[key]['transactions'].add(transaction);
     }
 
     return groupedTransaction;
+  }
+
+  List<Map<String, dynamic>> expensesDataChart() {
+    List<Map<String, dynamic>> expensesData = [];
+    int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
+    int year = Jiffy.parseFromDateTime(DateTime.now()).year;
+    int min = -2;
+    int max = 2;
+    int actual = -2;
+    Map<String, dynamic> groupedTransactions = groupByWeekYear();
+    String key = "$year-$weekYear";
+
+    for (actual; actual <= max; actual++) {
+      expensesData.add(
+        {'deposit': 100.00, 'spent': 10.00, 'weekYear': weekYear - actual},
+      );
+    }
+
+    return expensesData;
   }
 }

@@ -186,11 +186,17 @@ class HomePage extends StatelessWidget {
   }
 
   PieChart _expenseChart(double available, double spent) {
-    return PieChart(PieChartData(centerSpaceRadius: 40, sections: [
-      PieChartSectionData(
-          value: available, showTitle: false, color: Colors.green),
-      PieChartSectionData(value: spent, showTitle: false, color: Colors.red)
-    ]));
+    return PieChart(
+      PieChartData(
+        centerSpaceRadius: 40,
+        sections: [
+          PieChartSectionData(
+              value: available, showTitle: false, color: Colors.green),
+          PieChartSectionData(
+              value: spent, showTitle: false, color: Colors.red),
+        ],
+      ),
+    );
   }
 
   Card _recentTransactions(
