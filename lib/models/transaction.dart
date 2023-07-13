@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum TransactionType { deposit, spent }
 
 enum Categories {
@@ -13,6 +15,19 @@ enum Categories {
       if (category.name == name) return category;
     }
     return null;
+  }
+
+  static ColorSwatch<int>? categoryColors(Categories category) {
+    var categoryColors = {
+      Categories.bill: Colors.orangeAccent,
+      Categories.gaming: Colors.yellowAccent,
+      Categories.food: Colors.redAccent,
+      Categories.insurance: Colors.blueAccent,
+      Categories.investment: Colors.cyanAccent,
+      Categories.maintenance: Colors.blueGrey,
+    };
+
+    return categoryColors[category];
   }
 }
 

@@ -162,20 +162,21 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             color: colorScheme.onPrimaryContainer,
             fontSize: 18,
           ),
-          dropdownColor: colorScheme.primaryContainer,
+          dropdownColor: colorScheme.primaryContainer.withAlpha(200),
           icon: const SizedBox(),
           underline: const SizedBox(),
           items: Categories.values.map<DropdownMenuItem<String>>((value) {
             return DropdownMenuItem<String>(
               value: value.toShortString(),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   CircleAvatar(
-                    backgroundColor: colorScheme.primary,
+                    backgroundColor: Categories.categoryColors(value),
                     radius: 10,
                   ),
                   const SizedBox(
-                    width: 12,
+                    width: 16,
                   ),
                   Text(
                     value.toShortString(),

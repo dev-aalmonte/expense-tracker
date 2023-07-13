@@ -125,4 +125,21 @@ class TransactionsProvider with ChangeNotifier {
 
     return expensesData;
   }
+
+  Map<Categories, double> expensesCategoryDataChart() {
+    Map<Categories, double> expensesCategoryData = {};
+    int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
+    int year = Jiffy.parseFromDateTime(DateTime.now()).year;
+
+    Map<String, dynamic> groupedTransactions = groupByWeekYear();
+    String key = "$year-$weekYear";
+
+    for (Transaction transaction in groupedTransactions[key]['transactions']) {
+      if (transaction.category != null) {
+        expensesCategoryData[transaction.category!] = transaction.amount;
+      }
+    }
+
+    return expensesCategoryData;
+  }
 }

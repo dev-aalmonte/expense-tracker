@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
 class TransactionItem extends StatefulWidget {
-  final dynamic groupTransaction;
+  final Map<String, dynamic> groupTransaction;
   const TransactionItem({super.key, required this.groupTransaction});
 
   @override
@@ -19,8 +19,9 @@ class _TransactionItemState extends State<TransactionItem> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Transaction> transactions =
-        widget.groupTransaction['transactions'];
+    final List<Transaction> transactions = [
+      ...widget.groupTransaction['transactions']
+    ];
     final double sumAmount = widget.groupTransaction['sumAmount'];
 
     final firstDayOfWeek = DateFormat('MMMd').format(transactions[0]

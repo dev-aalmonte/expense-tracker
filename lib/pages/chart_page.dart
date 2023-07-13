@@ -1,15 +1,27 @@
+import 'dart:math';
+
+import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ChartPage extends StatelessWidget {
+class ChartPage extends StatefulWidget {
   const ChartPage({super.key});
+
+  @override
+  State<ChartPage> createState() => _ChartPageState();
+}
+
+class _ChartPageState extends State<ChartPage> {
+  double _maxBarChartValue = 0;
 
   List getExpensesChartData(BuildContext context) {
     return Provider.of<TransactionsProvider>(context)
         .expensesDataChart()
         .map((item) {
+      _maxBarChartValue =
+          max(max(item['deposit'], item['spent']), _maxBarChartValue);
       return BarChartGroupData(x: item['weekYear'], barRods: [
         BarChartRodData(toY: item['deposit'], color: Colors.green),
         BarChartRodData(toY: item['spent'], color: Colors.red),
@@ -19,10 +31,19 @@ class ChartPage extends StatelessWidget {
 
   List<PieChartSectionData> getExpensesPerCategoryChartData(
       BuildContext context) {
-    return [
-      PieChartSectionData(value: 200, showTitle: false, color: Colors.green),
-      PieChartSectionData(value: 50, showTitle: false, color: Colors.red),
-    ];
+    Map<Categories, double> expensesCategoryData =
+        Provider.of<TransactionsProvider>(context).expensesCategoryDataChart();
+
+    List<PieChartSectionData> chartData = [];
+    expensesCategoryData.forEach((key, value) {
+      chartData.add(PieChartSectionData(
+        value: value,
+        color: Categories.categoryColors(key),
+        showTitle: false,
+      ));
+    });
+
+    return chartData;
   }
 
   @override
@@ -50,6 +71,7 @@ class ChartPage extends StatelessWidget {
                     height: 200,
                     child: BarChart(
                       BarChartData(
+                          maxY: _maxBarChartValue + 50,
                           barGroups: getExpensesChartData(context)
                               as List<BarChartGroupData>),
                     ),

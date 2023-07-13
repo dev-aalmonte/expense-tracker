@@ -55,7 +55,7 @@ class TransactionTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     CircleAvatar(
-                      backgroundColor: colorScheme.primary,
+                      backgroundColor: Categories.categoryColors(category!),
                       radius: 10,
                     ),
                     const SizedBox(
