@@ -19,7 +19,7 @@ class _TabsPageState extends State<TabsPage> {
   final List<String> _pagesTitle = [
     "Transactions",
     "Dashboard",
-    "Add Transaction"
+    "User Statistics"
   ];
 
   void _selectPage(int index) {
