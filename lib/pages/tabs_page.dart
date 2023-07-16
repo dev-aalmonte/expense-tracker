@@ -84,8 +84,8 @@ class _TabsPageState extends State<TabsPage> {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_chart),
-            label: "Add Transaction",
+            icon: Icon(Icons.pie_chart),
+            label: "Charts",
           ),
         ],
       ),
