@@ -15,6 +15,22 @@ class ChartPage extends StatefulWidget {
 
 class _ChartPageState extends State<ChartPage> {
   double _maxBarChartValue = 0;
+  DateTimeRange dateRange = DateTimeRange(
+    start: DateTime.now().subtract(const Duration(days: 30)),
+    end: DateTime.now(),
+  );
+
+  void _selectDateRange() async {
+    final newDateRange = await showDateRangePicker(
+        context: context,
+        initialDateRange: dateRange,
+        firstDate: DateTime(2022),
+        lastDate: DateTime.now());
+
+    setState(() {
+      dateRange = newDateRange ?? dateRange;
+    });
+  }
 
   List getExpensesChartData(BuildContext context) {
     return Provider.of<TransactionsProvider>(context)
@@ -54,11 +70,39 @@ class _ChartPageState extends State<ChartPage> {
     List<PieChartSectionData> categoryChartData =
         getExpensesPerCategoryChartData(context);
 
+    final startDate = dateRange.start;
+    final endDate = dateRange.end;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text(
+                    "Date Range",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    width: 32,
+                  ),
+                  TextButton(
+                    onPressed: _selectDateRange,
+                    child: Text(
+                        "${startDate.month}-${startDate.day}-${startDate.year} to ${endDate.month}-${endDate.day}-${endDate.year}"),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
