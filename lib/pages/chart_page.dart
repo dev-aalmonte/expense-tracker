@@ -31,23 +31,29 @@ class _ChartPageState extends State<ChartPage> {
 
   List<PieChartSectionData> getExpensesPerCategoryChartData(
       BuildContext context) {
-    Map<Categories, double> expensesCategoryData =
+    Map<Categories, double>? expensesCategoryData =
         Provider.of<TransactionsProvider>(context).expensesCategoryDataChart();
 
     List<PieChartSectionData> chartData = [];
-    expensesCategoryData.forEach((key, value) {
-      chartData.add(PieChartSectionData(
-        value: value,
-        color: Categories.categoryColors(key),
-        showTitle: false,
-      ));
-    });
+
+    if (expensesCategoryData != null) {
+      expensesCategoryData.forEach((key, value) {
+        chartData.add(PieChartSectionData(
+          value: value,
+          color: Categories.categoryColors(key),
+          showTitle: false,
+        ));
+      });
+    }
 
     return chartData;
   }
 
   @override
   Widget build(BuildContext context) {
+    List<PieChartSectionData> categoryChartData =
+        getExpensesPerCategoryChartData(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -62,9 +68,14 @@ class _ChartPageState extends State<ChartPage> {
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 16, bottom: 24, top: 12),
-                    child: Text(
-                      "Weekly Expenses",
-                      style: Theme.of(context).textTheme.titleLarge,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Weekly Expenses",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -94,14 +105,38 @@ class _ChartPageState extends State<ChartPage> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        sections: getExpensesPerCategoryChartData(context),
+                  if (categoryChartData.isEmpty)
+                    SizedBox(
+                      height: 200,
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 42,
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            "No data available",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          )
+                        ],
                       ),
-                    ),
-                  )
+                    )
+                  else
+                    SizedBox(
+                      height: 200,
+                      child: PieChart(
+                        PieChartData(
+                          sections: getExpensesPerCategoryChartData(context),
+                        ),
+                      ),
+                    )
                 ],
               ),
             ),
