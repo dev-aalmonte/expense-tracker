@@ -51,15 +51,21 @@ class _ChartPageState extends State<ChartPage> {
         Provider.of<TransactionsProvider>(context)
             .expensesCategoryDataChart(dateRange);
 
+    double max = Provider.of<TransactionsProvider>(context).max;
+
     List<PieChartSectionData> chartData = [];
 
     if (expensesCategoryData != null) {
       expensesCategoryData.forEach((key, value) {
+        double percentage = (value / max) * 100;
         chartData.add(PieChartSectionData(
-          value: value,
-          color: Categories.categoryColors(key),
-          showTitle: false,
-        ));
+            radius: 50,
+            value: value,
+            color: Categories.categoryColors(key),
+            title: "${percentage.toStringAsFixed(2)}%",
+            titleStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Categories.categoryTextColors(key))));
       });
     }
 

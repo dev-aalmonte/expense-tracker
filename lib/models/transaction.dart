@@ -29,6 +29,19 @@ enum Categories {
 
     return categoryColors[category];
   }
+
+  static Color? categoryTextColors(Categories category) {
+    var categoryTextColors = {
+      Categories.bill: Colors.black87,
+      Categories.gaming: Colors.black87,
+      Categories.food: Colors.black87,
+      Categories.insurance: Colors.black87,
+      Categories.investment: Colors.black87,
+      Categories.maintenance: Colors.white,
+    };
+
+    return categoryTextColors[category];
+  }
 }
 
 extension ParseToString on Categories {

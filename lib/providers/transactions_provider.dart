@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TransactionsProvider with ChangeNotifier {
   double deposit = 0.00;
   double spent = 0.00;
+  double max = 0.00;
 
   List<Transaction> _transactions = [];
 
@@ -134,6 +135,8 @@ class TransactionsProvider with ChangeNotifier {
     late int startYear;
     late int endYear;
 
+    max = 0;
+
     if (dateRange != null) {
       startWeekYear = Jiffy.parseFromDateTime(dateRange.start).weekOfYear;
       endWeekYear = Jiffy.parseFromDateTime(dateRange.end).weekOfYear;
@@ -156,6 +159,7 @@ class TransactionsProvider with ChangeNotifier {
         for (Transaction transaction in groupedTransactions[key]
             ['transactions']) {
           if (transaction.category != null) {
+            max += transaction.amount;
             expensesCategoryData[transaction.category!] = transaction.amount;
           }
         }
