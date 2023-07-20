@@ -126,24 +126,42 @@ class TransactionsProvider with ChangeNotifier {
     return expensesData;
   }
 
-  Map<Categories, double>? expensesCategoryDataChart() {
+  Map<Categories, double>? expensesCategoryDataChart(DateTimeRange? dateRange) {
     Map<Categories, double> expensesCategoryData = {};
-    int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
-    int year = Jiffy.parseFromDateTime(DateTime.now()).year;
-
     Map<String, dynamic> groupedTransactions = groupByWeekYear();
-    String key = "$year-$weekYear";
+    late int startWeekYear;
+    late int endWeekYear;
+    late int startYear;
+    late int endYear;
 
-    if (!groupedTransactions.containsKey(key)) {
-      return null;
+    if (dateRange != null) {
+      startWeekYear = Jiffy.parseFromDateTime(dateRange.start).weekOfYear;
+      endWeekYear = Jiffy.parseFromDateTime(dateRange.end).weekOfYear;
+      startYear = Jiffy.parseFromDateTime(dateRange.start).year;
+      endYear = Jiffy.parseFromDateTime(dateRange.end).year;
+    } else {
+      startWeekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
+      endWeekYear = startWeekYear;
+      startYear = Jiffy.parseFromDateTime(DateTime.now()).year;
+      endYear = startYear;
     }
 
-    for (Transaction transaction in groupedTransactions[key]['transactions']) {
-      if (transaction.category != null) {
-        expensesCategoryData[transaction.category!] = transaction.amount;
+    for (int year = startYear; year <= endYear; year++) {
+      for (int weekYear = startWeekYear; weekYear <= endWeekYear; weekYear++) {
+        String key = "$year-$weekYear";
+        if (!groupedTransactions.containsKey(key)) {
+          continue;
+        }
+
+        for (Transaction transaction in groupedTransactions[key]
+            ['transactions']) {
+          if (transaction.category != null) {
+            expensesCategoryData[transaction.category!] = transaction.amount;
+          }
+        }
       }
     }
 
-    return expensesCategoryData;
+    return expensesCategoryData.isEmpty ? null : expensesCategoryData;
   }
 }

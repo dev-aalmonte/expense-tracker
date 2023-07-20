@@ -16,7 +16,7 @@ class ChartPage extends StatefulWidget {
 class _ChartPageState extends State<ChartPage> {
   double _maxBarChartValue = 0;
   DateTimeRange dateRange = DateTimeRange(
-    start: DateTime.now().subtract(const Duration(days: 30)),
+    start: DateTime.now().subtract(const Duration(days: 1)),
     end: DateTime.now(),
   );
 
@@ -48,7 +48,8 @@ class _ChartPageState extends State<ChartPage> {
   List<PieChartSectionData> getExpensesPerCategoryChartData(
       BuildContext context) {
     Map<Categories, double>? expensesCategoryData =
-        Provider.of<TransactionsProvider>(context).expensesCategoryDataChart();
+        Provider.of<TransactionsProvider>(context)
+            .expensesCategoryDataChart(dateRange);
 
     List<PieChartSectionData> chartData = [];
 
