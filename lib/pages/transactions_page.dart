@@ -10,10 +10,12 @@ class TransactionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<TransactionsProvider>(context, listen: false).groupByWeekYear();
+
     return Consumer<TransactionsProvider>(
       builder: (context, provider, child) {
         final Map<String, dynamic> groupedTransactions =
-            provider.groupByWeekYear();
+            provider.groupedTransactions;
         final dataLength = provider.transactions.length;
         return dataLength > 0
             ? RefreshIndicator(

@@ -17,6 +17,12 @@ class TransactionsProvider with ChangeNotifier {
     return [..._transactions];
   }
 
+  Map<String, dynamic> _groupedTransactions = {};
+
+  Map<String, dynamic> get groupedTransactions {
+    return {..._groupedTransactions};
+  }
+
   Future<void> fetchUserDeposit() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     deposit = prefs.getDouble('deposit') ?? 0.00;
@@ -69,9 +75,9 @@ class TransactionsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, dynamic> groupByWeekYear() {
-    fetchTransactions();
-    var groupedTransaction = <String, dynamic>{};
+  Future<void> groupByWeekYear() async {
+    await fetchTransactions();
+    _groupedTransactions = {};
     for (var transaction in _transactions) {
       int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;
       int year = Jiffy.parseFromDateTime(transaction.date).year;
@@ -79,34 +85,33 @@ class TransactionsProvider with ChangeNotifier {
       int positiveNegative =
           transaction.type == TransactionType.deposit ? 1 : -1;
 
-      if (!groupedTransaction.containsKey(key)) {
-        groupedTransaction[key] = {
+      if (!_groupedTransactions.containsKey(key)) {
+        _groupedTransactions[key] = {
           'sumAmount': 0,
           'transactions': [],
         };
       }
 
-      groupedTransaction[key]['sumAmount'] +=
+      _groupedTransactions[key]['sumAmount'] +=
           transaction.amount * positiveNegative;
-      groupedTransaction[key]['transactions'].add(transaction);
+      _groupedTransactions[key]['transactions'].add(transaction);
     }
-
-    return groupedTransaction;
+    notifyListeners();
   }
 
-  List<Map<String, dynamic>> expensesDataChart() {
+  Future<List<Map<String, dynamic>>> expensesDataChart() async {
+    await groupByWeekYear();
     List<Map<String, dynamic>> expensesData = [];
     int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
     int year = Jiffy.parseFromDateTime(DateTime.now()).year;
     int max = 2; // Maximum week Lookout (Relative to the actual week)
-    Map<String, dynamic> groupedTransactions = groupByWeekYear();
 
     for (int actual = -2; actual <= max; actual++) {
       String key = "$year-${weekYear - actual}";
 
-      List<Transaction> weeklyTransactions = groupedTransactions[key] == null
+      List<Transaction> weeklyTransactions = _groupedTransactions[key] == null
           ? []
-          : [...groupedTransactions[key]['transactions']];
+          : [..._groupedTransactions[key]['transactions']];
 
       double deposit = 0;
       double spent = 0;
@@ -129,7 +134,6 @@ class TransactionsProvider with ChangeNotifier {
 
   Map<Categories, double>? expensesCategoryDataChart(DateTimeRange? dateRange) {
     Map<Categories, double> expensesCategoryData = {};
-    Map<String, dynamic> groupedTransactions = groupByWeekYear();
     late int startWeekYear;
     late int endWeekYear;
     late int startYear;
@@ -152,11 +156,11 @@ class TransactionsProvider with ChangeNotifier {
     for (int year = startYear; year <= endYear; year++) {
       for (int weekYear = startWeekYear; weekYear <= endWeekYear; weekYear++) {
         String key = "$year-$weekYear";
-        if (!groupedTransactions.containsKey(key)) {
+        if (!_groupedTransactions.containsKey(key)) {
           continue;
         }
 
-        for (Transaction transaction in groupedTransactions[key]
+        for (Transaction transaction in _groupedTransactions[key]
             ['transactions']) {
           if (transaction.category != null) {
             max += transaction.amount;

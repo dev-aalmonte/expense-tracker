@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/providers/chart_provider.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +13,17 @@ class ChartPage extends StatefulWidget {
 }
 
 class _ChartPageState extends State<ChartPage> {
-  double _maxBarChartValue = 0;
   DateTimeRange dateRange = DateTimeRange(
     start: DateTime.now().subtract(const Duration(days: 1)),
     end: DateTime.now(),
   );
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<ChartProvider>(context, listen: false).fetchExpensesChart();
+  }
 
   void _selectDateRange() async {
     final newDateRange = await showDateRangePicker(
@@ -30,19 +35,6 @@ class _ChartPageState extends State<ChartPage> {
     setState(() {
       dateRange = newDateRange ?? dateRange;
     });
-  }
-
-  List getExpensesChartData(BuildContext context) {
-    return Provider.of<TransactionsProvider>(context)
-        .expensesDataChart()
-        .map((item) {
-      _maxBarChartValue =
-          max(max(item['deposit'], item['spent']), _maxBarChartValue);
-      return BarChartGroupData(x: item['weekYear'], barRods: [
-        BarChartRodData(toY: item['deposit'], color: Colors.green),
-        BarChartRodData(toY: item['spent'], color: Colors.red),
-      ]);
-    }).toList();
   }
 
   List<PieChartSectionData> getExpensesPerCategoryChartData(
@@ -133,9 +125,11 @@ class _ChartPageState extends State<ChartPage> {
                     height: 200,
                     child: BarChart(
                       BarChartData(
-                          maxY: _maxBarChartValue + 50,
-                          barGroups: getExpensesChartData(context)
-                              as List<BarChartGroupData>),
+                          maxY: Provider.of<ChartProvider>(context)
+                                  .maxBarChartValue +
+                              50,
+                          barGroups: Provider.of<ChartProvider>(context)
+                              .expensesChart),
                     ),
                   ),
                 ],
@@ -184,7 +178,7 @@ class _ChartPageState extends State<ChartPage> {
                       height: 200,
                       child: PieChart(
                         PieChartData(
-                          sections: getExpensesPerCategoryChartData(context),
+                          sections: categoryChartData,
                         ),
                       ),
                     )

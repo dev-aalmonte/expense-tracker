@@ -1,6 +1,7 @@
 import 'package:expense_tracker/pages/add_transaction_page.dart';
 import 'package:expense_tracker/pages/splash_page.dart';
 import 'package:expense_tracker/pages/tabs_page.dart';
+import 'package:expense_tracker/providers/chart_provider.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +17,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: TransactionsProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TransactionsProvider>(
+            create: (_) => TransactionsProvider()),
+        ChangeNotifierProvider<ChartProvider>(create: (_) => ChartProvider()),
+      ],
       child: MaterialApp(
         title: 'Expense Tracker',
         debugShowCheckedModeBanner: false,
