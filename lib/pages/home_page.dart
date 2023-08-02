@@ -6,8 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool isMonthly = false;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +23,40 @@ class HomePage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "My Expenses",
-            style: Theme.of(context).textTheme.titleLarge,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "My Expenses",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Row(
+                children: [
+                  const Text("Weekly"),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Switch(
+                      value: isMonthly,
+                      thumbIcon: MaterialStateProperty.all(
+                        isMonthly
+                            ? const Icon(Icons.arrow_forward)
+                            : const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
+                      ),
+                      inactiveThumbColor: Colors.green,
+                      onChanged: (value) {
+                        setState(() {
+                          isMonthly = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const Text("Monthly"),
+                ],
+              )
+            ],
           ),
           FutureBuilder(
               future:

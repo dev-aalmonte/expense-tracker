@@ -20,7 +20,6 @@ class _ChartPageState extends State<ChartPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Provider.of<ChartProvider>(context, listen: false).fetchExpensesChart();
   }
