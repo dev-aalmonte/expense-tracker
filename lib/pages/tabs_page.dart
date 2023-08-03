@@ -31,17 +31,17 @@ class _TabsPageState extends State<TabsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_pagesTitle[_selectedIndex]),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AddTransactionPage.route);
-            },
-            icon: const Icon(Icons.add),
-          )
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text(_pagesTitle[_selectedIndex]),
+      //   actions: [
+      //     IconButton(
+      //       onPressed: () {
+      //         Navigator.pushNamed(context, AddTransactionPage.route);
+      //       },
+      //       icon: const Icon(Icons.add),
+      //     )
+      //   ],
+      // ),
       body: GestureDetector(
         onHorizontalDragUpdate: (details) {
           const int sensitivity = 4;
@@ -64,12 +64,21 @@ class _TabsPageState extends State<TabsPage> {
           }
           _swipeDirection = "";
         },
-        child: [
-          TransactionsPage(),
-          const HomePage(),
-          const ChartPage()
-          // AddTransactionPage(changePage: () => _selectPage(1),)
-        ][_selectedIndex],
+        child: Padding(
+          padding: const EdgeInsets.only(top: 28, left: 16, right: 16),
+          child: [
+            TransactionsPage(),
+            const HomePage(),
+            const ChartPage()
+            // AddTransactionPage(changePage: () => _selectPage(1),)
+          ][_selectedIndex],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, AddTransactionPage.route);
+        },
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,

@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -62,15 +62,12 @@ class _HomePageState extends State<HomePage> {
               future:
                   Provider.of<TransactionsProvider>(context).fetchUserDeposit(),
               builder: (context, snapshot) => _expensesCard(context)),
-          const SizedBox(
-            height: 4,
-          ),
-          Text(
-            "Recent Transactions",
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(
-            height: 4,
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              "Recent Transactions",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
           Expanded(
             child: FutureBuilder(

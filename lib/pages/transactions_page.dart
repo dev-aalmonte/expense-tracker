@@ -20,16 +20,31 @@ class TransactionsPage extends StatelessWidget {
         return dataLength > 0
             ? RefreshIndicator(
                 onRefresh: provider.fetchTransactions,
-                child: ListView.builder(
-                    itemCount: groupedTransactions.length,
-                    itemBuilder: (context, index) {
-                      String key = groupedTransactions.keys.elementAt(index);
-                      return Card(
-                        child: TransactionItem(
-                          groupTransaction: groupedTransactions[key],
-                        ),
-                      );
-                    }),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Transactions History",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: groupedTransactions.length,
+                            itemBuilder: (context, index) {
+                              String key =
+                                  groupedTransactions.keys.elementAt(index);
+                              return Card(
+                                child: TransactionItem(
+                                  groupTransaction: groupedTransactions[key],
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
               )
             : child!;
       },
