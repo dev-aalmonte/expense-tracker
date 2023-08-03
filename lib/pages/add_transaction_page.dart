@@ -67,16 +67,21 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Add Transaction"),
-      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _depositExpenseSelectorWidget(context),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Add Transaction",
+                      style: Theme.of(context).textTheme.titleLarge),
+                  _depositExpenseSelectorWidget(context),
+                ],
+              ),
               CurrencyFormField(controller: _amountController),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -109,8 +114,23 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
               const SizedBox(
                 height: 24,
               ),
-              ElevatedButton(
-                  onPressed: _submitForm, child: const Text('Add Transaction'))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text('Add Transaction')),
+                ],
+              )
             ],
           ),
         ),
@@ -146,8 +166,16 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     final colorScheme = Theme.of(context).colorScheme;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
+        color: colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(50),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: const Offset(0, 2),
+          )
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
@@ -159,10 +187,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
             });
           },
           style: TextStyle(
-            color: colorScheme.onPrimaryContainer,
-            fontSize: 18,
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
           ),
-          dropdownColor: colorScheme.primaryContainer.withAlpha(200),
+          dropdownColor: colorScheme.secondaryContainer,
           icon: const SizedBox(),
           underline: const SizedBox(),
           items: Categories.values.map<DropdownMenuItem<String>>((value) {
