@@ -38,19 +38,35 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   void _submitForm() {
     FocusManager.instance.primaryFocus?.unfocus();
     final Transaction transaction = Transaction(
-        type: _isDeposit ? TransactionType.deposit : TransactionType.spent,
-        category: Categories.fromName(category.toLowerCase()),
-        amount: double.parse(_amountController.text),
-        date: DateFormat('M/d/y').parse(_dateController.text),
-        description: _descriptionController.text);
+      type: _isDeposit ? TransactionType.deposit : TransactionType.spent,
+      category: Categories.fromName(category.toLowerCase()),
+      amount: double.parse(_amountController.text),
+      date: DateFormat('M/d/y').parse(_dateController.text),
+      description: _descriptionController.text,
+    );
 
-    Provider.of<TransactionsProvider>(context, listen: false)
-        .addTransaction(transaction);
+    if (transaction.amount > 0.00) {
+      Provider.of<TransactionsProvider>(context, listen: false)
+          .addTransaction(transaction);
 
-    if (widget.changePage != null) {
-      widget.changePage!();
+      if (widget.changePage != null) {
+        widget.changePage!();
+      } else {
+        Navigator.pop(context);
+      }
     } else {
-      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: const Text("Transaction should have amount"),
+          action: SnackBarAction(
+            textColor: Colors.white,
+            label: 'Ok',
+            onPressed: () =>
+                ScaffoldMessenger.of(context).hideCurrentSnackBar(),
+          ),
+        ),
+      );
     }
   }
 
