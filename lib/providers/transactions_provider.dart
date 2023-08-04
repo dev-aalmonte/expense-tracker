@@ -23,6 +23,10 @@ class TransactionsProvider with ChangeNotifier {
     return {..._groupedTransactions};
   }
 
+  Future<void> deleteData() async {
+    await DBHelper.clearData();
+  }
+
   Future<void> fetchUserDeposit() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     deposit = prefs.getDouble('deposit') ?? 0.00;

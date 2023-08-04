@@ -46,7 +46,7 @@ class DBHelper {
     return db.query(table, where: '$column BETWEEN ? AND ?', whereArgs: range);
   }
 
-  static void clearData() async {
+  static Future<void> clearData() async {
     final dbPath = await sql.getDatabasesPath();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
