@@ -20,77 +20,77 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "My Expenses",
+      child: FutureBuilder(
+        future: Provider.of<TransactionsProvider>(context)
+            .fetchTransactionSummary(isMonthly: isMonthly),
+        builder: (context, snapshot) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "My Expenses",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Row(
+                  children: [
+                    const Text("Weekly"),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Switch(
+                        value: isMonthly,
+                        thumbIcon: MaterialStateProperty.all(
+                          isMonthly
+                              ? const Icon(Icons.arrow_forward)
+                              : const Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
+                        ),
+                        inactiveThumbColor: Colors.green,
+                        onChanged: (value) {
+                          setState(() {
+                            isMonthly = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const Text("Monthly"),
+                  ],
+                )
+              ],
+            ),
+            _expensesCard(context),
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: Text(
+                "Recent Transactions",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              Row(
-                children: [
-                  const Text("Weekly"),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Switch(
-                      value: isMonthly,
-                      thumbIcon: MaterialStateProperty.all(
-                        isMonthly
-                            ? const Icon(Icons.arrow_forward)
-                            : const Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              ),
-                      ),
-                      inactiveThumbColor: Colors.green,
-                      onChanged: (value) {
-                        setState(() {
-                          isMonthly = value;
-                        });
-                      },
-                    ),
-                  ),
-                  const Text("Monthly"),
-                ],
-              )
-            ],
-          ),
-          FutureBuilder(
-              future:
-                  Provider.of<TransactionsProvider>(context).fetchUserDeposit(),
-              builder: (context, snapshot) => _expensesCard(context)),
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Text(
-              "Recent Transactions",
-              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ),
-          Expanded(
-            child: FutureBuilder(
-              future: Provider.of<TransactionsProvider>(context)
-                  .fetchTransactions(),
-              builder: (context, snapshot) => Consumer<TransactionsProvider>(
+            Expanded(
+              child: Consumer<TransactionsProvider>(
                 builder: (context, provider, child) => provider
-                        .transactions.isNotEmpty
+                        .summaryTransactions.isNotEmpty
                     ? ListView.builder(
-                        itemCount: provider.transactions.length > 4
+                        itemCount: provider.summaryTransactions.length > 4
                             ? 4
-                            : provider.transactions.length,
+                            : provider.summaryTransactions.length,
                         itemBuilder: (context, index) => _recentTransactions(
-                            transactionType: provider.transactions[index].type,
-                            category: provider.transactions[index].category,
-                            amount: provider.transactions[index].amount,
-                            date: provider.transactions[index].date))
+                            transactionType:
+                                provider.summaryTransactions[index].type,
+                            category:
+                                provider.summaryTransactions[index].category,
+                            amount: provider.summaryTransactions[index].amount,
+                            date: provider.summaryTransactions[index].date),
+                      )
                     : child!,
                 child: _noDataWidget(context),
               ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

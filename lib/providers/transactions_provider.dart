@@ -11,14 +11,17 @@ class TransactionsProvider with ChangeNotifier {
   double spent = 0.00;
   double max = 0.00;
 
-  List<Transaction> _transactions = [];
+  List<Transaction> _summaryTransactions = [];
+  List<Transaction> get summaryTransactions {
+    return [..._summaryTransactions];
+  }
 
+  List<Transaction> _transactions = [];
   List<Transaction> get transactions {
     return [..._transactions];
   }
 
   Map<String, dynamic> _groupedTransactions = {};
-
   Map<String, dynamic> get groupedTransactions {
     return {..._groupedTransactions};
   }
@@ -27,10 +30,17 @@ class TransactionsProvider with ChangeNotifier {
     await DBHelper.clearData();
   }
 
-  Future<void> fetchUserDeposit() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    deposit = prefs.getDouble('deposit') ?? 0.00;
-    spent = prefs.getDouble('spent') ?? 0.00;
+  void fetchUserDeposit() {
+    deposit = 0;
+    spent = 0;
+
+    for (var transaction in _summaryTransactions) {
+      if (transaction.category == null) {
+        deposit += transaction.amount;
+      } else {
+        spent += transaction.amount;
+      }
+    }
   }
 
   Future<void> addTransaction(Transaction transaction) async {
@@ -61,6 +71,47 @@ class TransactionsProvider with ChangeNotifier {
     } else {
       await prefs.setDouble('spent', spent + transaction.amount);
     }
+  }
+
+  Future<void> fetchTransactionSummary({bool isMonthly = false}) async {
+    List range = [];
+
+    if (!isMonthly) {
+      int todayWeekday = Jiffy.now().dayOfWeek;
+      DateTime weekStart = DateTime.now()
+          .subtract(Duration(days: todayWeekday - (todayWeekday - 1)));
+      weekStart = DateTime(weekStart.year, weekStart.month, weekStart.day);
+
+      range = [
+        weekStart.toIso8601String(),
+        DateTime.now().toIso8601String(),
+      ];
+    } else {
+      int todayYear = DateTime.now().year;
+      int todayMonth = DateTime.now().month;
+      range = [
+        DateTime(todayYear, todayMonth, 1).toIso8601String(),
+        DateTime.now().toIso8601String(),
+      ];
+    }
+
+    final dataList =
+        await DBHelper.fetchWhereBetween('transactions', 'date', range);
+    _summaryTransactions = dataList
+        .map(
+          (item) => Transaction(
+            id: item['id'],
+            type: TransactionType.values[item['type']],
+            category: item['category'] != null
+                ? Categories.values[item['category']]
+                : null,
+            amount: item['amount'],
+            date: DateTime.parse(item['date']),
+            description: item['description'],
+          ),
+        )
+        .toList();
+    fetchUserDeposit();
   }
 
   Future<void> fetchTransactions() async {
