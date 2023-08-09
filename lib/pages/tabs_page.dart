@@ -15,7 +15,6 @@ class TabsPage extends StatefulWidget {
 
 class _TabsPageState extends State<TabsPage> {
   int _selectedIndex = 1;
-  String _swipeDirection = "";
   late PageController _pageController;
 
   @override
@@ -29,12 +28,6 @@ class _TabsPageState extends State<TabsPage> {
     _pageController.dispose();
     super.dispose();
   }
-
-  final List<String> _pagesTitle = [
-    "Transactions",
-    "Dashboard",
-    "User Statistics"
-  ];
 
   void _selectPage(int index) {
     setState(() {
@@ -59,42 +52,7 @@ class _TabsPageState extends State<TabsPage> {
               _selectedIndex = value;
             });
           },
-          // onHorizontalDragUpdate: (details) {
-          //   const int sensitivity = 4;
-          //   if (details.delta.dx > sensitivity && _selectedIndex > 0) {
-          //     _swipeDirection = "left";
-          //   }
-          //   if (details.delta.dx < -sensitivity &&
-          //       _selectedIndex < _pagesTitle.length - 1) {
-          //     _swipeDirection = "right";
-          //   }
-          // },
-          // onHorizontalDragEnd: (details) {
-          //   switch (_swipeDirection) {
-          //     case "left":
-          //       _selectPage(_selectedIndex - 1);
-          //       break;
-          //     case "right":
-          //       _selectPage(_selectedIndex + 1);
-          //       break;
-          //   }
-          //   _swipeDirection = "";
-          // },
-          children: [
-            TransactionsPage(),
-            const HomePage(),
-            const ChartPage()
-            // AddTransactionPage(changePage: () => _selectPage(1),)
-          ],
-          // child: Padding(
-          //   padding: const EdgeInsets.only(top: 28, left: 16, right: 16),
-          //   child: [
-          //     TransactionsPage(),
-          //     const HomePage(),
-          //     const ChartPage()
-          //     // AddTransactionPage(changePage: () => _selectPage(1),)
-          //   ][_selectedIndex],
-          // ),
+          children: [TransactionsPage(), const HomePage(), const ChartPage()],
         ),
       ),
       floatingActionButton: FloatingActionButton(
