@@ -17,6 +17,8 @@ class _ChartPageState extends State<ChartPage> {
     start: DateTime.now().subtract(const Duration(days: 1)),
     end: DateTime.now(),
   );
+  Map<Categories, double>? expensesCategoryData;
+  double? maxValue;
 
   @override
   void initState() {
@@ -38,25 +40,29 @@ class _ChartPageState extends State<ChartPage> {
 
   List<PieChartSectionData> getExpensesPerCategoryChartData(
       BuildContext context) {
-    Map<Categories, double>? expensesCategoryData =
-        Provider.of<TransactionsProvider>(context)
-            .expensesCategoryDataChart(dateRange);
+    expensesCategoryData = Provider.of<TransactionsProvider>(context)
+        .expensesCategoryDataChart(dateRange);
 
-    double max = Provider.of<TransactionsProvider>(context).max;
+    maxValue = Provider.of<TransactionsProvider>(context).max;
 
     List<PieChartSectionData> chartData = [];
 
     if (expensesCategoryData != null) {
-      expensesCategoryData.forEach((key, value) {
-        double percentage = (value / max) * 100;
-        chartData.add(PieChartSectionData(
-            radius: 50,
+      expensesCategoryData!.forEach((key, value) {
+        double percentage = (value / maxValue!) * 100;
+        chartData.add(
+          PieChartSectionData(
+            showTitle: false,
+            radius: 40,
             value: value,
             color: Categories.categoryColors(key),
             title: "${percentage.toStringAsFixed(2)}%",
             titleStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Categories.categoryTextColors(key))));
+                  fontWeight: FontWeight.bold,
+                  color: Categories.categoryTextColors(key),
+                ),
+          ),
+        );
       });
     }
 
@@ -176,19 +182,79 @@ class _ChartPageState extends State<ChartPage> {
                     ),
                   )
                 else
-                  SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        sections: categoryChartData,
+                  Row(
+                    children: [
+                      Column(
+                        children: expensesCategoryData!.keys
+                            .map((category) => ChartLegend(
+                                  color: Categories.categoryColors(category)!,
+                                  label: category.toShortString(),
+                                  value:
+                                      "${((expensesCategoryData![category]! / maxValue!) * 100).toStringAsFixed(2)}%",
+                                ))
+                            .toList(),
                       ),
-                    ),
+                      Expanded(
+                        child: SizedBox(
+                          width: 120,
+                          height: 200,
+                          child: PieChart(
+                            PieChartData(
+                              centerSpaceRadius: 40,
+                              sections: categoryChartData,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   )
               ],
             ),
           ),
         )
       ],
+    );
+  }
+}
+
+class ChartLegend extends StatelessWidget {
+  final Color color;
+  final String label;
+  final String value;
+
+  const ChartLegend({
+    super.key,
+    required this.color,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          CircleAvatar(
+            maxRadius: 5,
+            backgroundColor: color,
+          ),
+          const SizedBox(
+            width: 4,
+          ),
+          Text(
+            "$label: ",
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge!
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.labelLarge!,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -223,7 +223,6 @@ class _HomePageState extends State<HomePage> {
   PieChart _expenseChart(double available, double spent) {
     return PieChart(
       PieChartData(
-        centerSpaceRadius: 40,
         sections: [
           PieChartSectionData(
               value: available, showTitle: false, color: Colors.green),
