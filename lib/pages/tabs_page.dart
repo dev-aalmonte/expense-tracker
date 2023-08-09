@@ -16,6 +16,20 @@ class TabsPage extends StatefulWidget {
 class _TabsPageState extends State<TabsPage> {
   int _selectedIndex = 1;
   String _swipeDirection = "";
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   final List<String> _pagesTitle = [
     "Transactions",
     "Dashboard",
@@ -25,53 +39,62 @@ class _TabsPageState extends State<TabsPage> {
   void _selectPage(int index) {
     setState(() {
       _selectedIndex = index;
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOut,
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(_pagesTitle[_selectedIndex]),
-      //   actions: [
-      //     IconButton(
-      //       onPressed: () {
-      //         Navigator.pushNamed(context, AddTransactionPage.route);
-      //       },
-      //       icon: const Icon(Icons.add),
-      //     )
-      //   ],
-      // ),
-      body: GestureDetector(
-        onHorizontalDragUpdate: (details) {
-          const int sensitivity = 4;
-          if (details.delta.dx > sensitivity && _selectedIndex > 0) {
-            _swipeDirection = "left";
-          }
-          if (details.delta.dx < -sensitivity &&
-              _selectedIndex < _pagesTitle.length - 1) {
-            _swipeDirection = "right";
-          }
-        },
-        onHorizontalDragEnd: (details) {
-          switch (_swipeDirection) {
-            case "left":
-              _selectPage(_selectedIndex - 1);
-              break;
-            case "right":
-              _selectPage(_selectedIndex + 1);
-              break;
-          }
-          _swipeDirection = "";
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 28, left: 16, right: 16),
-          child: [
+      body: Padding(
+        padding: const EdgeInsets.only(top: 28, left: 16, right: 16),
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (value) {
+            setState(() {
+              _selectedIndex = value;
+            });
+          },
+          // onHorizontalDragUpdate: (details) {
+          //   const int sensitivity = 4;
+          //   if (details.delta.dx > sensitivity && _selectedIndex > 0) {
+          //     _swipeDirection = "left";
+          //   }
+          //   if (details.delta.dx < -sensitivity &&
+          //       _selectedIndex < _pagesTitle.length - 1) {
+          //     _swipeDirection = "right";
+          //   }
+          // },
+          // onHorizontalDragEnd: (details) {
+          //   switch (_swipeDirection) {
+          //     case "left":
+          //       _selectPage(_selectedIndex - 1);
+          //       break;
+          //     case "right":
+          //       _selectPage(_selectedIndex + 1);
+          //       break;
+          //   }
+          //   _swipeDirection = "";
+          // },
+          children: [
             TransactionsPage(),
             const HomePage(),
             const ChartPage()
             // AddTransactionPage(changePage: () => _selectPage(1),)
-          ][_selectedIndex],
+          ],
+          // child: Padding(
+          //   padding: const EdgeInsets.only(top: 28, left: 16, right: 16),
+          //   child: [
+          //     TransactionsPage(),
+          //     const HomePage(),
+          //     const ChartPage()
+          //     // AddTransactionPage(changePage: () => _selectPage(1),)
+          //   ][_selectedIndex],
+          // ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
