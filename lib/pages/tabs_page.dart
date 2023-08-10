@@ -20,7 +20,7 @@ class _TabsPageState extends State<TabsPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _pageController = PageController(initialPage: _selectedIndex);
   }
 
   @override
