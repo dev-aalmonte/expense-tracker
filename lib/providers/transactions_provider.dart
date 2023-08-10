@@ -77,9 +77,10 @@ class TransactionsProvider with ChangeNotifier {
     List range = [];
 
     if (!isMonthly) {
+      // Weekly
       int todayWeekday = Jiffy.now().dayOfWeek;
-      DateTime weekStart = DateTime.now()
-          .subtract(Duration(days: todayWeekday - (todayWeekday - 1)));
+      DateTime weekStart =
+          DateTime.now().subtract(Duration(days: (todayWeekday - 1)));
       weekStart = DateTime(weekStart.year, weekStart.month, weekStart.day);
 
       range = [
@@ -87,6 +88,7 @@ class TransactionsProvider with ChangeNotifier {
         DateTime.now().toIso8601String(),
       ];
     } else {
+      // Monthly
       int todayYear = DateTime.now().year;
       int todayMonth = DateTime.now().month;
       range = [
