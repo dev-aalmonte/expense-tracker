@@ -44,7 +44,7 @@ class _TabsPageState extends State<TabsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 28, left: 16, right: 16),
+        padding: const EdgeInsets.only(top: 28),
         child: PageView(
           controller: _pageController,
           onPageChanged: (value) {
@@ -52,7 +52,20 @@ class _TabsPageState extends State<TabsPage> {
               _selectedIndex = value;
             });
           },
-          children: [TransactionsPage(), const HomePage(), const ChartPage()],
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TransactionsPage(),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: HomePage(),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: ChartPage(),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

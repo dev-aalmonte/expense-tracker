@@ -1,3 +1,4 @@
+import 'package:expense_tracker/pages/accounts_page.dart';
 import 'package:expense_tracker/pages/add_transaction_page.dart';
 import 'package:expense_tracker/pages/splash_page.dart';
 import 'package:expense_tracker/pages/tabs_page.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         home: const SplashPage(),
         routes: {
           TabsPage.route: (context) => const TabsPage(),
+          AccountPage.route: (context) => const AccountPage(),
           AddTransactionPage.route: (context) => const AddTransactionPage()
         },
       ),
