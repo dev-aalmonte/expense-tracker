@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  static const String route = '/transactions';
+  static const String route = '/addTransactions';
   final Function? changePage;
 
   const AddTransactionPage({super.key, this.changePage});

@@ -10,6 +10,7 @@ class DBHelper {
         onCreate: (db, version) {
       db.execute("""CREATE TABLE transactions(
                                   id INTEGER PRIMARY KEY NOT NULL, 
+                                  account_id INTEGER NOT NULL,
                                   type INTEGER NOT NULL,
                                   amount REAL NOT NULL, 
                                   date TEXT NOT NULL,
@@ -21,7 +22,14 @@ class DBHelper {
                                   total REAL NOT NULL, 
                                   spent REAL NOT NULL)
         """);
-    }, version: 3);
+      db.execute("""CREATE TABLE accounts(
+                                  id INTEGER PRIMARY KEY NOT NULL, 
+                                  name TEXT NOT NULL,
+                                  acc_number TEXT NOT NULL UNIQUE,
+                                  available REAL NOT NULL, 
+                                  spent REAL NOT NULL)
+        """);
+    }, version: 4);
   }
 
   static Future<int> insert(String table, Map<String, dynamic> data) async {
