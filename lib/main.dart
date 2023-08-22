@@ -1,7 +1,7 @@
 import 'package:expense_tracker/pages/accounts_page.dart';
 import 'package:expense_tracker/pages/add_account_page.dart';
 import 'package:expense_tracker/pages/add_transaction_page.dart';
-import 'package:expense_tracker/pages/splash_page.dart';
+// import 'package:expense_tracker/pages/splash_page.dart';
 import 'package:expense_tracker/pages/tabs_page.dart';
 import 'package:expense_tracker/providers/account_provider.dart';
 import 'package:expense_tracker/providers/chart_provider.dart';

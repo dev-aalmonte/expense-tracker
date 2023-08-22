@@ -1,6 +1,5 @@
 import 'package:expense_tracker/helpers/db_helper.dart';
 import 'package:expense_tracker/models/account.dart';
-import 'package:expense_tracker/pages/accounts_page.dart';
 import 'package:flutter/material.dart';
 
 class AccountProvider with ChangeNotifier {
