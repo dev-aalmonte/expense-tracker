@@ -56,7 +56,7 @@ extension ParseToString on Categories {
 
 class Transaction {
   late int? id;
-  final Account? account;
+  final Account account;
   final TransactionType type;
   final double amount;
   final DateTime date;
@@ -65,7 +65,7 @@ class Transaction {
 
   Transaction({
     this.id,
-    this.account,
+    required this.account,
     required this.type,
     required this.amount,
     required this.date,

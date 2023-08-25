@@ -19,7 +19,6 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Provider.of<AccountProvider>(context, listen: false).fetchAccount();
   }
@@ -108,6 +107,8 @@ class AccountCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
+          Provider.of<AccountProvider>(context, listen: false).activeAccount =
+              account;
           Navigator.of(context).pushNamed(TabsPage.route);
         },
         child: Card(

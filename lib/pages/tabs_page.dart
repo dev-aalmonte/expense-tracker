@@ -2,7 +2,9 @@ import 'package:expense_tracker/pages/add_transaction_page.dart';
 import 'package:expense_tracker/pages/chart_page.dart';
 import 'package:expense_tracker/pages/home_page.dart';
 import 'package:expense_tracker/pages/transactions_page.dart';
+import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TabsPage extends StatefulWidget {
   static const String route = '/tabs';

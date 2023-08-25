@@ -1,4 +1,5 @@
 import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/providers/account_provider.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:expense_tracker/widgets/currency_form_field.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   final _amountController = TextEditingController();
   final _dateController = TextEditingController();
   final _descriptionController = TextEditingController();
+  late final _activeAccount;
 
   final DateTime _today = DateTime.now();
   late DateTime _actualDate;
@@ -27,12 +29,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   @override
   void initState() {
+    super.initState();
     _actualDate = _today;
     _dateController.text = DateFormat('M/d/y').format(_today);
     _amountController.text = "0.00";
     _amountController.selection = TextSelection.fromPosition(
         TextPosition(offset: _amountController.text.length));
-    super.initState();
+    _activeAccount =
+        Provider.of<AccountProvider>(context, listen: false).activeAccount;
   }
 
   void _submitForm() {
@@ -41,13 +45,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       type: _isDeposit ? TransactionType.deposit : TransactionType.spent,
       category: Categories.fromName(category.toLowerCase()),
       amount: double.parse(_amountController.text),
+      account: _activeAccount,
       date: DateFormat('M/d/y').parse(_dateController.text),
       description: _descriptionController.text,
     );
 
     if (transaction.amount > 0.00) {
       Provider.of<TransactionsProvider>(context, listen: false)
-          .addTransaction(transaction);
+          .addTransaction(transaction, _activeAccount);
 
       if (widget.changePage != null) {
         widget.changePage!();

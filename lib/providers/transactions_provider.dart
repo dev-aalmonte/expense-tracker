@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:expense_tracker/helpers/db_helper.dart';
+import 'package:expense_tracker/models/account.dart';
+import 'package:expense_tracker/models/db_where.dart';
 import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/providers/account_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionsProvider with ChangeNotifier {
   double deposit = 0.00;
@@ -43,10 +45,12 @@ class TransactionsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addTransaction(Transaction transaction) async {
+  Future<void> addTransaction(
+      Transaction transaction, Account activeAccount) async {
     var transactionObject = {
       "type": transaction.type.index,
       "amount": transaction.amount,
+      "account_id": transaction.account.id,
       "date": transaction.date.toIso8601String(),
       "description": transaction.description
     };
@@ -57,25 +61,40 @@ class TransactionsProvider with ChangeNotifier {
 
     transaction.id = await DBHelper.insert('transactions', transactionObject);
     _transactions.add(transaction);
-    _setDepositPreference(transaction);
+    _setDepositPreference(transaction, activeAccount);
 
     notifyListeners();
   }
 
-  void _setDepositPreference(Transaction transaction) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    fetchUserDeposit();
-
+  void _setDepositPreference(
+      Transaction transaction, Account activeAccount) async {
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // fetchUserDeposit();
+    late Account updatedAccount;
     if (transaction.type == TransactionType.deposit) {
-      await prefs.setDouble('deposit', deposit + transaction.amount);
+      updatedAccount = Account(
+        id: activeAccount.id,
+        name: activeAccount.name,
+        accNumber: activeAccount.accNumber,
+        available: activeAccount.available + transaction.amount,
+        spent: activeAccount.spent,
+      );
     } else {
-      await prefs.setDouble('spent', spent + transaction.amount);
+      updatedAccount = Account(
+        id: activeAccount.id,
+        name: activeAccount.name,
+        accNumber: activeAccount.accNumber,
+        available: activeAccount.available,
+        spent: activeAccount.spent + transaction.amount,
+      );
     }
+
+    AccountProvider.updateAccount(updatedAccount);
   }
 
-  Future<void> fetchTransactionSummary({bool isMonthly = false}) async {
+  Future<void> fetchTransactionSummary(Account activeAcount,
+      {bool isMonthly = false}) async {
     List range = [];
-
     if (!isMonthly) {
       // Weekly
       int todayWeekday = Jiffy.now().dayOfWeek;
@@ -97,44 +116,49 @@ class TransactionsProvider with ChangeNotifier {
       ];
     }
 
-    final dataList =
-        await DBHelper.fetchWhereBetween('transactions', 'date', range);
-    _summaryTransactions = dataList
-        .map(
-          (item) => Transaction(
-            id: item['id'],
-            type: TransactionType.values[item['type']],
-            category: item['category'] != null
-                ? Categories.values[item['category']]
-                : null,
-            amount: item['amount'],
-            date: DateTime.parse(item['date']),
-            description: item['description'],
-          ),
-        )
-        .toList();
+    final dataList = await DBHelper.fetchWhereMultiple('transactions', [
+      DBWhere(
+          column: 'date',
+          operation: WhereOperation.between,
+          value: range,
+          chain: WhereChain.and),
+      DBWhere(
+        column: 'account_id',
+        operation: WhereOperation.equal,
+        value: activeAcount.id,
+      ),
+    ]);
+
+    for (var item in dataList) {
+      _summaryTransactions.add(Transaction(
+        id: item['id'],
+        account: await AccountProvider.fetchAccountById(item['account_id']),
+        type: TransactionType.values[item['type']],
+        amount: item['amount'],
+        date: DateTime.parse(item['date']),
+        description: item['description'],
+      ));
+    }
     fetchUserDeposit();
   }
 
   Future<void> fetchTransactions() async {
     final dataList = await DBHelper.getData('transactions');
-    _transactions = dataList
-        .map((item) => Transaction(
-            id: item['id'],
-            type: TransactionType.values[item['type']],
-            category: item['category'] != null
-                ? Categories.values[item['category']]
-                : null,
-            amount: item['amount'],
-            date: DateTime.parse(item['date']),
-            description: item['description']))
-        .toList();
+    for (var item in dataList) {
+      _transactions.add(Transaction(
+        id: item['id'],
+        account: await AccountProvider.fetchAccountById(item['account_id']),
+        type: TransactionType.values[item['type']],
+        amount: item['amount'],
+        date: DateTime.parse(item['date']),
+        description: item['description'],
+      ));
+    }
     notifyListeners();
   }
 
   Future<void> groupByWeekYear() async {
     await fetchTransactions();
-    _groupedTransactions = {};
     for (var transaction in _transactions) {
       int weekYear = Jiffy.parseFromDateTime(transaction.date).weekOfYear;
       int year = Jiffy.parseFromDateTime(transaction.date).year;

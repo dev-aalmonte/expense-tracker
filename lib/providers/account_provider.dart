@@ -1,5 +1,6 @@
 import 'package:expense_tracker/helpers/db_helper.dart';
 import 'package:expense_tracker/models/account.dart';
+import 'package:expense_tracker/models/db_where.dart';
 import 'package:flutter/material.dart';
 
 class AccountProvider with ChangeNotifier {
@@ -11,6 +12,10 @@ class AccountProvider with ChangeNotifier {
   Account? _activeAccount;
   Account? get activeAccount {
     return _activeAccount;
+  }
+
+  set activeAccount(Account? account) {
+    _activeAccount = account;
   }
 
   Future<void> fetchAccount() async {
@@ -29,6 +34,20 @@ class AccountProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  static Future<Account> fetchAccountById(int accountId) async {
+    final data = await DBHelper.fetchWhere("accounts", "id", accountId);
+    Account returnAccount = data
+        .map((item) => Account(
+              id: item['id'],
+              name: item['name'],
+              accNumber: item['acc_number'],
+              available: item['available'],
+              spent: item['spent'],
+            ))
+        .toList()[0];
+    return returnAccount;
+  }
+
   Future<void> addAccount(Account account) async {
     var accountObject = {
       "name": account.name,
@@ -41,5 +60,21 @@ class AccountProvider with ChangeNotifier {
     _accounts.add(account);
 
     notifyListeners();
+  }
+
+  static Future<void> updateAccount(Account account) async {
+    var accountObject = {
+      "id": account.id,
+      "name": account.name,
+      "acc_number": account.accNumber,
+      "available": account.available,
+      "spent": account.spent
+    };
+
+    await DBHelper.update(
+      'accounts',
+      accountObject,
+      DBWhere(column: 'id', operation: WhereOperation.equal, value: account.id),
+    );
   }
 }

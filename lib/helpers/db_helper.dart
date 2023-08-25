@@ -1,3 +1,4 @@
+import 'package:expense_tracker/models/db_where.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
@@ -37,6 +38,13 @@ class DBHelper {
     return db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  static Future<int> update(
+      String table, Map<String, dynamic> values, DBWhere where) async {
+    final db = await DBHelper.database();
+    return db.update(table, values,
+        where: where.toString(), whereArgs: [where.value]);
+  }
+
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await DBHelper.database();
     return db.query(table, orderBy: "id DESC");
@@ -46,6 +54,29 @@ class DBHelper {
       String table, String column, var value) async {
     final db = await DBHelper.database();
     return db.query(table, where: '$column = ?', whereArgs: [value]);
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchWhereMultiple(
+      String table, List<DBWhere> arguments) async {
+    final db = await DBHelper.database();
+    String where = '';
+    List values = [];
+    for (final argument in arguments) {
+      where += argument.toString();
+
+      if (argument.operation == WhereOperation.between) {
+        values.add(argument.value[0]);
+        values.add(argument.value[1]);
+      } else {
+        values.add(argument.value);
+      }
+
+      if (argument.chain != null) {
+        where += "${WhereChain.operatorToString(argument.chain!)} ";
+      }
+    }
+
+    return db.query(table, where: where, whereArgs: values);
   }
 
   static Future<List<Map<String, dynamic>>> fetchWhereBetween(

@@ -1,4 +1,6 @@
+import 'package:expense_tracker/models/account.dart';
 import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/providers/account_provider.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:expense_tracker/widgets/transaction_tile.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -22,18 +24,47 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: FutureBuilder(
         future: Provider.of<TransactionsProvider>(context)
-            .fetchTransactionSummary(isMonthly: isMonthly),
+            .fetchTransactionSummary(
+                Provider.of<AccountProvider>(context, listen: false)
+                    .activeAccount!,
+                isMonthly: isMonthly),
         builder: (context, snapshot) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "My Expenses",
-                  style: Theme.of(context).textTheme.titleLarge,
+                DropdownMenu(
+                  initialSelection:
+                      Provider.of<AccountProvider>(context, listen: false)
+                          .activeAccount,
+                  inputDecorationTheme: const InputDecorationTheme(
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    isDense: false,
+                  ),
+                  menuStyle: const MenuStyle(
+                    padding: MaterialStatePropertyAll(EdgeInsets.zero),
+                  ),
+                  textStyle: Theme.of(context).textTheme.titleLarge,
+                  trailingIcon: const Icon(null),
+                  selectedTrailingIcon: const Icon(null),
+                  leadingIcon: const Icon(
+                    Icons.menu,
+                    size: 16,
+                  ),
+                  dropdownMenuEntries:
+                      Provider.of<AccountProvider>(context, listen: false)
+                          .accounts
+                          .map((item) => DropdownMenuEntry(
+                                value: item,
+                                label: item.name,
+                                leadingIcon: const Icon(Icons.credit_card),
+                              ))
+                          .toList(),
                 ),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text("Weekly"),
                     Padding(
@@ -69,26 +100,20 @@ class _HomePageState extends State<HomePage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            Expanded(
-              child: Consumer<TransactionsProvider>(
-                builder: (context, provider, child) => provider
-                        .summaryTransactions.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: provider.summaryTransactions.length > 4
-                            ? 4
-                            : provider.summaryTransactions.length,
-                        itemBuilder: (context, index) => _recentTransactions(
-                            transactionType:
-                                provider.summaryTransactions[index].type,
-                            category:
-                                provider.summaryTransactions[index].category,
-                            amount: provider.summaryTransactions[index].amount,
-                            date: provider.summaryTransactions[index].date),
-                      )
-                    : child!,
-                child: _noDataWidget(context),
-              ),
-            ),
+            Expanded(child: _noDataWidget(context)
+                // ListView.builder(
+                //   itemCount: provider.summaryTransactions.length > 4
+                //       ? 4
+                //       : provider.summaryTransactions.length,
+                //   itemBuilder: (context, index) => _recentTransactions(
+                //       transactionType:
+                //           provider.summaryTransactions[index].type,
+                //       category:
+                //           provider.summaryTransactions[index].category,
+                //       amount: provider.summaryTransactions[index].amount,
+                //       date: provider.summaryTransactions[index].date),
+                // )
+                ),
           ],
         ),
       ),
@@ -118,50 +143,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   Padding _expensesCard(BuildContext context) {
+    Account currentAccount =
+        Provider.of<AccountProvider>(context).activeAccount!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Consumer<TransactionsProvider>(
-            builder: (context, provider, child) => provider.deposit > 0.00 ||
-                    provider.spent > 0.00
-                ? Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _expenseLabel(context,
-                              label: "Available",
-                              value: (provider.deposit - provider.spent),
-                              color: Colors.green),
-                          Expanded(
-                            child: SizedBox(
-                              height: 200,
-                              width: 150,
-                              child: Stack(children: [
-                                _expenseChartLabel(context, provider.deposit),
-                                _expenseChart(
-                                    (provider.deposit - provider.spent),
-                                    provider.spent)
-                              ]),
-                            ),
-                          ),
-                          _expenseLabel(context,
-                              label: "Spent",
-                              value: provider.spent,
-                              color: Colors.red),
-                        ],
-                      )
-                    ],
-                  )
-                : child!,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
-              child: _noDataWidget(context),
-            ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _expenseLabel(context,
+                      label: "Available",
+                      value: (currentAccount.available - currentAccount.spent),
+                      color: Colors.green),
+                  Expanded(
+                    child: SizedBox(
+                      height: 200,
+                      width: 150,
+                      child: Stack(children: [
+                        _expenseChartLabel(context, currentAccount.available),
+                        _expenseChart(
+                          (currentAccount.available - currentAccount.spent),
+                          currentAccount.spent,
+                        )
+                      ]),
+                    ),
+                  ),
+                  _expenseLabel(context,
+                      label: "Spent",
+                      value: currentAccount.spent,
+                      color: Colors.red),
+                ],
+              )
+            ],
           ),
+          // child: Padding(
+          //   padding:
+          //       const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+          //   child: _noDataWidget(context),
         ),
       ),
     );
