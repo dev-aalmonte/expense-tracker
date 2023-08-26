@@ -36,23 +36,23 @@ class ChartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchCategoryChart() {
-    TransactionsProvider transactionsProvider = TransactionsProvider();
-    double max = transactionsProvider.max;
-    Map<Categories, double>? expensesCategoryData =
-        transactionsProvider.expensesCategoryDataChart(null);
+  // void fetchCategoryChart() {
+  //   TransactionsProvider transactionsProvider = TransactionsProvider();
+  //   double max = transactionsProvider.max;
+  //   Map<Categories, double>? expensesCategoryData =
+  //       transactionsProvider.expensesCategoryDataChart(null);
 
-    if (expensesCategoryData != null) {
-      expensesCategoryData.forEach((key, value) {
-        double percentage = (value / max) * 100;
-        _categoryChart.add(PieChartSectionData(
-          radius: 50,
-          value: value,
-          color: Categories.categoryColors(key),
-          title: "${percentage.toStringAsFixed(2)}%",
-        ));
-      });
-    }
-    notifyListeners();
-  }
+  //   if (expensesCategoryData != null) {
+  //     expensesCategoryData.forEach((key, value) {
+  //       double percentage = (value / max) * 100;
+  //       _categoryChart.add(PieChartSectionData(
+  //         radius: 50,
+  //         value: value,
+  //         color: Categories.categoryColors(key),
+  //         title: "${percentage.toStringAsFixed(2)}%",
+  //       ));
+  //     });
+  //   }
+  //   notifyListeners();
+  // }
 }

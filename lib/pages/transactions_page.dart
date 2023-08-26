@@ -10,114 +10,91 @@ class TransactionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<TransactionsProvider>(context, listen: false).groupByWeekYear();
-
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.error_outline,
-            size: 64,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Transactions History",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              IconButton.filled(
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Delete all data"),
+                      content: const Text(
+                          "Are you sure you want to delete all data? This action is unreversible"),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Cancel")),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Delete All Data
+                            Provider.of<TransactionsProvider>(context,
+                                    listen: false)
+                                .deleteData();
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Delete Data"),
+                        )
+                      ],
+                    );
+                  },
+                ),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                icon: const Icon(Icons.delete),
+              )
+            ],
           ),
-          const SizedBox(
-            height: 10,
+          Expanded(
+            child: FutureBuilder(
+              future:
+                  Provider.of<TransactionsProvider>(context).groupByWeekYear(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  Map<String, dynamic> groupedTransactions = snapshot.data!;
+                  return ListView.builder(
+                      itemCount: groupedTransactions.length,
+                      itemBuilder: (context, index) {
+                        String key = groupedTransactions.keys.elementAt(index);
+                        return Card(
+                          child: TransactionItem(
+                            groupTransaction: groupedTransactions[key],
+                          ),
+                        );
+                      });
+                }
+                return Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "Sorry, no data to be shown!",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    )
+                  ],
+                ));
+              },
+            ),
           ),
-          Text(
-            "Sorry, no data to be shown!",
-            style: Theme.of(context).textTheme.titleLarge,
-          )
         ],
       ),
     );
-    // return Consumer<TransactionsProvider>(
-    //   builder: (context, provider, child) {
-    //     final Map<String, dynamic> groupedTransactions =
-    //         provider.groupedTransactions;
-    //     final dataLength = provider.transactions.length;
-    //     return dataLength > 0
-    //         ? RefreshIndicator(
-    //             onRefresh: provider.fetchTransactions,
-    //             child: Padding(
-    //               padding: const EdgeInsets.only(top: 8),
-    //               child: Column(
-    //                 crossAxisAlignment: CrossAxisAlignment.start,
-    //                 children: [
-    //                   Row(
-    //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                     children: [
-    //                       Text(
-    //                         "Transactions History",
-    //                         style: Theme.of(context).textTheme.titleLarge,
-    //                       ),
-    //                       IconButton.filled(
-    //                         onPressed: () => showDialog(
-    //                           context: context,
-    //                           builder: (context) {
-    //                             return AlertDialog(
-    //                               title: const Text("Delete all data"),
-    //                               content: const Text(
-    //                                   "Are you sure you want to delete all data? This action is unreversible"),
-    //                               actions: [
-    //                                 TextButton(
-    //                                     onPressed: () => Navigator.pop(context),
-    //                                     child: const Text("Cancel")),
-    //                                 ElevatedButton(
-    //                                   onPressed: () {
-    //                                     // Delete All Data
-    //                                     provider.deleteData();
-    //                                     Navigator.pop(context);
-    //                                   },
-    //                                   child: const Text("Delete Data"),
-    //                                 )
-    //                               ],
-    //                             );
-    //                           },
-    //                         ),
-    //                         style: IconButton.styleFrom(
-    //                           backgroundColor: Colors.red,
-    //                         ),
-    //                         icon: const Icon(Icons.delete),
-    //                       )
-    //                     ],
-    //                   ),
-    //                   Expanded(
-    //                     child: ListView.builder(
-    //                         itemCount: groupedTransactions.length,
-    //                         itemBuilder: (context, index) {
-    //                           String key =
-    //                               groupedTransactions.keys.elementAt(index);
-    //                           return Card(
-    //                             child: TransactionItem(
-    //                               groupTransaction: groupedTransactions[key],
-    //                             ),
-    //                           );
-    //                         }),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //           )
-    //         : child!;
-    //   },
-    //   child: Center(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: [
-    //         const Icon(
-    //           Icons.error_outline,
-    //           size: 64,
-    //         ),
-    //         const SizedBox(
-    //           height: 10,
-    //         ),
-    //         Text(
-    //           "Sorry, no data to be shown!",
-    //           style: Theme.of(context).textTheme.titleLarge,
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }

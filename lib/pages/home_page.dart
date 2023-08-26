@@ -20,14 +20,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    AccountProvider accountProvider =
+        Provider.of<AccountProvider>(context, listen: false);
+    Account activeAccount = accountProvider.activeAccount!;
+    List<Account> accounts = accountProvider.accounts;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: FutureBuilder(
         future: Provider.of<TransactionsProvider>(context)
-            .fetchTransactionSummary(
-                Provider.of<AccountProvider>(context, listen: false)
-                    .activeAccount!,
-                isMonthly: isMonthly),
+            .fetchTransactionSummary(activeAccount, isMonthly: isMonthly),
         builder: (context, snapshot) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,9 +37,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 DropdownMenu(
-                  initialSelection:
-                      Provider.of<AccountProvider>(context, listen: false)
-                          .activeAccount,
+                  initialSelection: activeAccount,
                   inputDecorationTheme: const InputDecorationTheme(
                     border: InputBorder.none,
                     isCollapsed: true,
@@ -53,15 +53,13 @@ class _HomePageState extends State<HomePage> {
                     Icons.menu,
                     size: 16,
                   ),
-                  dropdownMenuEntries:
-                      Provider.of<AccountProvider>(context, listen: false)
-                          .accounts
-                          .map((item) => DropdownMenuEntry(
-                                value: item,
-                                label: item.name,
-                                leadingIcon: const Icon(Icons.credit_card),
-                              ))
-                          .toList(),
+                  dropdownMenuEntries: accounts
+                      .map((item) => DropdownMenuEntry(
+                            value: item,
+                            label: item.name,
+                            leadingIcon: const Icon(Icons.credit_card),
+                          ))
+                      .toList(),
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -100,20 +98,27 @@ class _HomePageState extends State<HomePage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            Expanded(child: _noDataWidget(context)
-                // ListView.builder(
-                //   itemCount: provider.summaryTransactions.length > 4
-                //       ? 4
-                //       : provider.summaryTransactions.length,
-                //   itemBuilder: (context, index) => _recentTransactions(
-                //       transactionType:
-                //           provider.summaryTransactions[index].type,
-                //       category:
-                //           provider.summaryTransactions[index].category,
-                //       amount: provider.summaryTransactions[index].amount,
-                //       date: provider.summaryTransactions[index].date),
-                // )
-                ),
+            Expanded(
+              child: FutureBuilder(
+                future: Provider.of<TransactionsProvider>(context)
+                    .fetchTransactionSummary(activeAccount),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    List<Transaction> transactions = snapshot.data!;
+                    return ListView.builder(
+                      itemCount:
+                          transactions.length > 4 ? 4 : transactions.length,
+                      itemBuilder: (context, index) => _recentTransactions(
+                          transactionType: transactions[index].type,
+                          category: transactions[index].category,
+                          amount: transactions[index].amount,
+                          date: transactions[index].date),
+                    );
+                  }
+                  return _noDataWidget(context);
+                },
+              ),
+            ),
           ],
         ),
       ),

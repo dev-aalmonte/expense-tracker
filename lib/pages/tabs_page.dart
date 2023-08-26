@@ -2,9 +2,7 @@ import 'package:expense_tracker/pages/add_transaction_page.dart';
 import 'package:expense_tracker/pages/chart_page.dart';
 import 'package:expense_tracker/pages/home_page.dart';
 import 'package:expense_tracker/pages/transactions_page.dart';
-import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class TabsPage extends StatefulWidget {
   static const String route = '/tabs';
@@ -22,7 +20,8 @@ class _TabsPageState extends State<TabsPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _selectedIndex);
+    _pageController =
+        PageController(initialPage: _selectedIndex, viewportFraction: 0.99);
   }
 
   @override
@@ -36,7 +35,7 @@ class _TabsPageState extends State<TabsPage> {
       _selectedIndex = index;
       _pageController.animateToPage(
         index,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
       );
     });
