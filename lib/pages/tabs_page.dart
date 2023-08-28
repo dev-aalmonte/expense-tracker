@@ -20,8 +20,7 @@ class _TabsPageState extends State<TabsPage> {
   @override
   void initState() {
     super.initState();
-    _pageController =
-        PageController(initialPage: _selectedIndex, viewportFraction: 0.99);
+    _pageController = PageController(initialPage: _selectedIndex);
   }
 
   @override
@@ -35,7 +34,7 @@ class _TabsPageState extends State<TabsPage> {
       _selectedIndex = index;
       _pageController.animateToPage(
         index,
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
     });

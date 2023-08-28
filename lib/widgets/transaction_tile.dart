@@ -8,6 +8,7 @@ class TransactionTile extends StatelessWidget {
   final double amount;
   final DateTime date;
   final Categories? category;
+  final String? description;
 
   const TransactionTile({
     super.key,
@@ -15,6 +16,7 @@ class TransactionTile extends StatelessWidget {
     required this.amount,
     required this.date,
     this.category,
+    this.description,
   });
 
   @override
@@ -33,37 +35,137 @@ class TransactionTile extends StatelessWidget {
         break;
     }
 
-    return ListTile(
-      leading: SizedBox(
-        height: double.infinity,
-        child: Icon(icon, color: iconColor),
+    return GestureDetector(
+      onTap: () => showDialog(
+        context: context,
+        builder: (context) => TransactionDialog(
+          amount: amount,
+          category: category,
+          description: description,
+          icon: icon,
+          iconColor: iconColor,
+        ),
       ),
-      title: Text(toCurrencyString(amount.toString(),
-          leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
-      subtitle: Text(DateFormat("M/d/y").format(date)),
-      trailing: category != null
-          ? Padding(
-              padding:
-                  const EdgeInsets.only(left: 10, right: 10, top: 5, bottom: 5),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+      child: ListTile(
+        leading: SizedBox(
+          height: double.infinity,
+          child: Icon(icon, color: iconColor),
+        ),
+        title: Text(toCurrencyString(amount.toString(),
+            leadingSymbol: CurrencySymbols.DOLLAR_SIGN)),
+        subtitle: Text(DateFormat("M/d/y").format(date)),
+        trailing: category != null
+            ? Padding(
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 5, bottom: 5),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Categories.categoryColors(category!),
+                      radius: 10,
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    Text(
+                      category!.toShortString(),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.bold, letterSpacing: .5),
+                    ),
+                  ],
+                ),
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+class TransactionDialog extends StatelessWidget {
+  final double amount;
+  final String? description;
+  final Categories? category;
+  final IconData icon;
+  final MaterialColor iconColor;
+
+  const TransactionDialog({
+    super.key,
+    required this.amount,
+    this.description,
+    this.category,
+    required this.icon,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Categories.categoryColors(category!),
-                    radius: 10,
+                  Icon(
+                    icon,
+                    color: iconColor,
+                    size: 32,
                   ),
                   const SizedBox(
-                    width: 12,
+                    width: 8,
                   ),
-                  Text(
-                    category!.toShortString(),
-                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        fontWeight: FontWeight.bold, letterSpacing: .5),
+                  Column(
+                    children: [
+                      Text(
+                        toCurrencyString(amount.toStringAsFixed(2),
+                            leadingSymbol: CurrencySymbols.DOLLAR_SIGN),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            )
-          : null,
+              const SizedBox(
+                height: 8,
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(description ?? "No description"),
+                ),
+              )
+            ],
+          ),
+        )
+        // Row(
+        //   children: [
+        //     Padding(
+        //       padding: const EdgeInsets.all(16),
+        //       child: Icon(
+        //         icon,
+        //         color: iconColor,
+        //         size: 32,
+        //       ),
+        //     ),
+        //     Column(
+        //       children: [
+        //         Text(
+        //           toCurrencyString(amount.toStringAsFixed(2),
+        //               leadingSymbol: CurrencySymbols.DOLLAR_SIGN),
+        //           style: Theme.of(context).textTheme.titleLarge,
+        //         ),
+        //         const SizedBox(
+        //           height: 8,
+        //         ),
+        //         Text(description ?? ""),
+        //       ],
+        //     )
+        //   ],
+        // )
+      ],
     );
   }
 }
