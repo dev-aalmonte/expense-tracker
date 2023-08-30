@@ -29,94 +29,90 @@ class _HomePageState extends State<HomePage> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: FutureBuilder(
-        future: Provider.of<TransactionsProvider>(context)
-            .fetchTransactionSummary(activeAccount, isMonthly: isMonthly),
-        builder: (context, snapshot) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownMenu(
-                  initialSelection: activeAccount,
-                  inputDecorationTheme: const InputDecorationTheme(
-                    border: InputBorder.none,
-                    isCollapsed: true,
-                    isDense: false,
-                  ),
-                  menuStyle: const MenuStyle(
-                    padding: MaterialStatePropertyAll(EdgeInsets.zero),
-                  ),
-                  textStyle: Theme.of(context).textTheme.titleLarge,
-                  trailingIcon: const Icon(null),
-                  selectedTrailingIcon: const Icon(null),
-                  leadingIcon: const Icon(
-                    Icons.menu,
-                    size: 16,
-                  ),
-                  dropdownMenuEntries: accounts
-                      .map((item) => DropdownMenuEntry(
-                            value: item,
-                            label: item.name,
-                            leadingIcon: const Icon(Icons.credit_card),
-                          ))
-                      .toList(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              DropdownMenu(
+                initialSelection: activeAccount,
+                inputDecorationTheme: const InputDecorationTheme(
+                  border: InputBorder.none,
+                  isCollapsed: true,
+                  isDense: false,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text("Weekly"),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Switch(
-                        value: isMonthly,
-                        thumbIcon: MaterialStateProperty.all(
-                          isMonthly
-                              ? const Icon(Icons.arrow_forward)
-                              : const Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white,
-                                ),
-                        ),
-                        inactiveThumbColor: Colors.green,
-                        onChanged: (value) {
-                          setState(() {
-                            isMonthly = value;
-                          });
-                        },
-                      ),
-                    ),
-                    const Text("Monthly"),
-                  ],
-                )
-              ],
-            ),
-            _expensesCard(context),
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Text(
-                "Recent Transactions",
-                style: Theme.of(context).textTheme.titleLarge,
+                menuStyle: const MenuStyle(
+                  padding: MaterialStatePropertyAll(EdgeInsets.zero),
+                ),
+                textStyle: Theme.of(context).textTheme.titleLarge,
+                trailingIcon: const Icon(null),
+                selectedTrailingIcon: const Icon(null),
+                leadingIcon: const Icon(
+                  Icons.menu,
+                  size: 16,
+                ),
+                dropdownMenuEntries: accounts
+                    .map((item) => DropdownMenuEntry(
+                          value: item,
+                          label: item.name,
+                          leadingIcon: const Icon(Icons.credit_card),
+                        ))
+                    .toList(),
               ),
-            ),
-            Expanded(
-              child: widget.transactionsSummary.isEmpty
-                  ? _noDataWidget(context)
-                  : ListView.builder(
-                      itemCount: widget.transactionsSummary.length > 4
-                          ? 4
-                          : widget.transactionsSummary.length,
-                      itemBuilder: (context, index) => _recentTransactions(
-                        transactionType: widget.transactionsSummary[index].type,
-                        category: widget.transactionsSummary[index].category,
-                        amount: widget.transactionsSummary[index].amount,
-                        date: widget.transactionsSummary[index].date,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Weekly"),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Switch(
+                      value: isMonthly,
+                      thumbIcon: MaterialStateProperty.all(
+                        isMonthly
+                            ? const Icon(Icons.arrow_forward)
+                            : const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
                       ),
+                      inactiveThumbColor: Colors.green,
+                      onChanged: (value) {
+                        setState(() {
+                          isMonthly = value;
+                        });
+                      },
                     ),
+                  ),
+                  const Text("Monthly"),
+                ],
+              )
+            ],
+          ),
+          _expensesCard(context),
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              "Recent Transactions",
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: widget.transactionsSummary.isEmpty
+                ? _noDataWidget(context)
+                : ListView.builder(
+                    itemCount: widget.transactionsSummary.length > 4
+                        ? 4
+                        : widget.transactionsSummary.length,
+                    itemBuilder: (context, index) => _recentTransactions(
+                      transactionType: widget.transactionsSummary[index].type,
+                      category: widget.transactionsSummary[index].category,
+                      amount: widget.transactionsSummary[index].amount,
+                      date: widget.transactionsSummary[index].date,
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -144,8 +140,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Padding _expensesCard(BuildContext context) {
-    Account currentAccount =
-        Provider.of<AccountProvider>(context).activeAccount!;
+    var summaryChartData =
+        Provider.of<TransactionsProvider>(context).transactionSummaryChartData;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Card(
@@ -158,24 +154,27 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   _expenseLabel(context,
                       label: "Available",
-                      value: (currentAccount.available - currentAccount.spent),
+                      value: (summaryChartData["deposit"]! -
+                          summaryChartData["spent"]!),
                       color: Colors.green),
                   Expanded(
                     child: SizedBox(
                       height: 200,
                       width: 150,
                       child: Stack(children: [
-                        _expenseChartLabel(context, currentAccount.available),
+                        _expenseChartLabel(
+                            context, summaryChartData["deposit"]!),
                         _expenseChart(
-                          (currentAccount.available - currentAccount.spent),
-                          currentAccount.spent,
+                          (summaryChartData["deposit"]! -
+                              summaryChartData["spent"]!),
+                          summaryChartData["spent"]!,
                         )
                       ]),
                     ),
                   ),
                   _expenseLabel(context,
                       label: "Spent",
-                      value: currentAccount.spent,
+                      value: summaryChartData["spent"]!,
                       color: Colors.red),
                 ],
               )

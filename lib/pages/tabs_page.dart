@@ -34,9 +34,18 @@ class _TabsPageState extends State<TabsPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     activeAccount = Provider.of<AccountProvider>(context).activeAccount!;
-    Provider.of<TransactionsProvider>(context)
-        .fetchTransactionSummary(activeAccount);
-    Provider.of<TransactionsProvider>(context).groupByWeekYear();
+    if (!Provider.of<TransactionsProvider>(context).isDataLoaded) {
+      Future.wait([
+        Provider.of<TransactionsProvider>(context, listen: false)
+            .fetchTransactionSummary(activeAccount),
+        Provider.of<TransactionsProvider>(context, listen: false)
+            .groupByWeekYear()
+      ]).then((_) {
+        Provider.of<TransactionsProvider>(context, listen: false).isDataLoaded =
+            true;
+        setState(() {});
+      });
+    }
   }
 
   @override
@@ -58,6 +67,17 @@ class _TabsPageState extends State<TabsPage> {
 
   @override
   Widget build(BuildContext context) {
+    TransactionsProvider transactionsProvider =
+        Provider.of<TransactionsProvider>(context);
+
+    if (!transactionsProvider.isDataLoaded) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 28),

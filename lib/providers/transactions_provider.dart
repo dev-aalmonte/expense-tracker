@@ -12,9 +12,11 @@ class TransactionsProvider with ChangeNotifier {
   // double deposit = 0.00;
   // double spent = 0.00;
   double max = 0.00;
+  bool isDataLoaded = false;
 
   List<Transaction> transactionsSummary = [];
   Map<String, dynamic> transactionsByWeekYear = {};
+  Map<String, double> transactionSummaryChartData = {};
 
   Future<void> deleteData() async {
     await DBHelper.clearData();
@@ -117,6 +119,22 @@ class TransactionsProvider with ChangeNotifier {
     }
 
     transactionsSummary = summaryTransactions;
+    _fetchTransactionSummaryChartData();
+  }
+
+  void _fetchTransactionSummaryChartData() {
+    transactionSummaryChartData = {"deposit": 0.00, "spent": 0.00};
+
+    for (Transaction transaction in transactionsSummary) {
+      if (transaction.type == TransactionType.deposit) {
+        transactionSummaryChartData["deposit"] =
+            (transactionSummaryChartData["deposit"] ?? 0) + transaction.amount;
+      }
+      if (transaction.type == TransactionType.spent) {
+        transactionSummaryChartData["spent"] =
+            (transactionSummaryChartData["spent"] ?? 0) + transaction.amount;
+      }
+    }
   }
 
   Future<List<Transaction>> fetchTransactions() async {
