@@ -39,19 +39,15 @@ class _HomePageState extends State<HomePage> {
                 initialSelection: activeAccount,
                 inputDecorationTheme: const InputDecorationTheme(
                   border: InputBorder.none,
-                  isCollapsed: true,
-                  isDense: false,
                 ),
                 menuStyle: const MenuStyle(
+                  visualDensity: VisualDensity.compact,
                   padding: MaterialStatePropertyAll(EdgeInsets.zero),
                 ),
                 textStyle: Theme.of(context).textTheme.titleLarge,
                 trailingIcon: const Icon(null),
                 selectedTrailingIcon: const Icon(null),
-                leadingIcon: const Icon(
-                  Icons.menu,
-                  size: 16,
-                ),
+                label: const Text("Account"),
                 dropdownMenuEntries: accounts
                     .map((item) => DropdownMenuEntry(
                           value: item,
@@ -60,33 +56,56 @@ class _HomePageState extends State<HomePage> {
                         ))
                     .toList(),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Weekly"),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Switch(
-                      value: isMonthly,
-                      thumbIcon: MaterialStateProperty.all(
-                        isMonthly
-                            ? const Icon(Icons.arrow_forward)
-                            : const Icon(
-                                Icons.arrow_back,
-                                color: Colors.white,
-                              ),
-                      ),
-                      inactiveThumbColor: Colors.green,
-                      onChanged: (value) {
-                        setState(() {
-                          isMonthly = value;
-                        });
-                      },
-                    ),
+              SegmentedButton(
+                style: const ButtonStyle(
+                  visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+                ),
+                selected: {isMonthly},
+                onSelectionChanged: (newSelection) {
+                  setState(() {
+                    isMonthly = newSelection.first;
+                  });
+                },
+                segments: const [
+                  ButtonSegment(
+                    value: false,
+                    label: Text("Week"),
+                    icon: Icon(Icons.calendar_view_week),
                   ),
-                  const Text("Monthly"),
+                  ButtonSegment(
+                    value: true,
+                    label: Text("Month"),
+                    icon: Icon(Icons.calendar_view_month),
+                  ),
                 ],
-              )
+              ),
+              // Row(
+              //   mainAxisSize: MainAxisSize.min,
+              //   children: [
+              //     const Text("Weekly"),
+              //     Padding(
+              //       padding: const EdgeInsets.symmetric(horizontal: 4),
+              //       child: Switch(
+              //         value: isMonthly,
+              //         thumbIcon: MaterialStateProperty.all(
+              //           isMonthly
+              //               ? const Icon(Icons.arrow_forward)
+              //               : const Icon(
+              //                   Icons.arrow_back,
+              //                   color: Colors.white,
+              //                 ),
+              //         ),
+              //         inactiveThumbColor: Colors.green,
+              //         onChanged: (value) {
+              //           setState(() {
+              //             isMonthly = value;
+              //           });
+              //         },
+              //       ),
+              //     ),
+              //     const Text("Monthly"),
+              //   ],
+              // )
             ],
           ),
           _expensesCard(context),
