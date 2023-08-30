@@ -24,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     AccountProvider accountProvider =
         Provider.of<AccountProvider>(context, listen: false);
+    TransactionsProvider transactionsProvider =
+        Provider.of<TransactionsProvider>(context, listen: false);
     Account activeAccount = accountProvider.activeAccount!;
     List<Account> accounts = accountProvider.accounts;
 
@@ -48,6 +50,17 @@ class _HomePageState extends State<HomePage> {
                 trailingIcon: const Icon(null),
                 selectedTrailingIcon: const Icon(null),
                 label: const Text("Account"),
+                onSelected: (value) {
+                  accountProvider.activeAccount = value;
+                  transactionsProvider.resetData();
+                  Future.wait([
+                    transactionsProvider.fetchTransactionSummary(value!),
+                    transactionsProvider.groupByWeekYear()
+                  ]).then((_) {
+                    transactionsProvider.isDataLoaded = true;
+                    setState(() {});
+                  });
+                },
                 dropdownMenuEntries: accounts
                     .map((item) => DropdownMenuEntry(
                           value: item,
