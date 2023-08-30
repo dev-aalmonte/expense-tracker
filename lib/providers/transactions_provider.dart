@@ -24,6 +24,16 @@ class TransactionsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetData() {
+    max = 0.00;
+    isDataLoaded = false;
+    isMonthly = false;
+
+    transactionsSummary = [];
+    transactionsByWeekYear = {};
+    transactionSummaryChartData = {};
+  }
+
   Future<void> addTransaction(
       Transaction transaction, Account activeAccount) async {
     var transactionObject = {

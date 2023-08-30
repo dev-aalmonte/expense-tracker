@@ -32,8 +32,8 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Stack(
+            alignment: Alignment.centerLeft,
             children: [
               DropdownMenu(
                 initialSelection: activeAccount,
@@ -56,32 +56,35 @@ class _HomePageState extends State<HomePage> {
                         ))
                     .toList(),
               ),
-              SegmentedButton(
-                style: const ButtonStyle(
-                  visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+              Align(
+                alignment: Alignment.centerRight,
+                child: SegmentedButton(
+                  style: const ButtonStyle(
+                    visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+                  ),
+                  selected: {isMonthly},
+                  onSelectionChanged: (newSelection) async {
+                    Provider.of<TransactionsProvider>(context, listen: false)
+                        .isMonthly = newSelection.first;
+                    Provider.of<TransactionsProvider>(context, listen: false)
+                        .fetchTransactionSummary(activeAccount);
+                    setState(() {
+                      isMonthly = newSelection.first;
+                    });
+                  },
+                  segments: const [
+                    ButtonSegment(
+                      value: false,
+                      label: Text("Week"),
+                      icon: Icon(Icons.calendar_view_week),
+                    ),
+                    ButtonSegment(
+                      value: true,
+                      label: Text("Month"),
+                      icon: Icon(Icons.calendar_view_month),
+                    ),
+                  ],
                 ),
-                selected: {isMonthly},
-                onSelectionChanged: (newSelection) async {
-                  Provider.of<TransactionsProvider>(context, listen: false)
-                      .isMonthly = newSelection.first;
-                  Provider.of<TransactionsProvider>(context, listen: false)
-                      .fetchTransactionSummary(activeAccount);
-                  setState(() {
-                    isMonthly = newSelection.first;
-                  });
-                },
-                segments: const [
-                  ButtonSegment(
-                    value: false,
-                    label: Text("Week"),
-                    icon: Icon(Icons.calendar_view_week),
-                  ),
-                  ButtonSegment(
-                    value: true,
-                    label: Text("Month"),
-                    icon: Icon(Icons.calendar_view_month),
-                  ),
-                ],
               ),
             ],
           ),

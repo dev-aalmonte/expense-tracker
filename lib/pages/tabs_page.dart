@@ -77,61 +77,67 @@ class _TabsPageState extends State<TabsPage> {
       );
     }
 
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(top: 28),
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (value) {
-            setState(() {
-              _selectedIndex = value;
-            });
+    return WillPopScope(
+      onWillPop: () async {
+        Provider.of<TransactionsProvider>(context, listen: false).resetData();
+        return true;
+      },
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.only(top: 28),
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (value) {
+              setState(() {
+                _selectedIndex = value;
+              });
+            },
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TransactionsPage(
+                    transactionsHistory:
+                        Provider.of<TransactionsProvider>(context)
+                            .transactionsByWeekYear),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: HomePage(
+                    transactionsSummary:
+                        Provider.of<TransactionsProvider>(context)
+                            .transactionsSummary),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: ChartPage(),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, AddTransactionPage.route);
           },
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TransactionsPage(
-                  transactionsHistory:
-                      Provider.of<TransactionsProvider>(context)
-                          .transactionsByWeekYear),
+          child: const Icon(Icons.add),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _selectPage,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.compare_arrows),
+              label: "Transactions",
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: HomePage(
-                  transactionsSummary:
-                      Provider.of<TransactionsProvider>(context)
-                          .transactionsSummary),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: ChartPage(),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.pie_chart),
+              label: "Charts",
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, AddTransactionPage.route);
-        },
-        child: const Icon(Icons.add),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _selectPage,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.compare_arrows),
-            label: "Transactions",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart),
-            label: "Charts",
-          ),
-        ],
       ),
     );
   }
