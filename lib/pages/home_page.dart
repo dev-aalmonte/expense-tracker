@@ -61,7 +61,11 @@ class _HomePageState extends State<HomePage> {
                   visualDensity: VisualDensity(vertical: -4, horizontal: -4),
                 ),
                 selected: {isMonthly},
-                onSelectionChanged: (newSelection) {
+                onSelectionChanged: (newSelection) async {
+                  Provider.of<TransactionsProvider>(context, listen: false)
+                      .isMonthly = newSelection.first;
+                  Provider.of<TransactionsProvider>(context, listen: false)
+                      .fetchTransactionSummary(activeAccount);
                   setState(() {
                     isMonthly = newSelection.first;
                   });
@@ -79,33 +83,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              // Row(
-              //   mainAxisSize: MainAxisSize.min,
-              //   children: [
-              //     const Text("Weekly"),
-              //     Padding(
-              //       padding: const EdgeInsets.symmetric(horizontal: 4),
-              //       child: Switch(
-              //         value: isMonthly,
-              //         thumbIcon: MaterialStateProperty.all(
-              //           isMonthly
-              //               ? const Icon(Icons.arrow_forward)
-              //               : const Icon(
-              //                   Icons.arrow_back,
-              //                   color: Colors.white,
-              //                 ),
-              //         ),
-              //         inactiveThumbColor: Colors.green,
-              //         onChanged: (value) {
-              //           setState(() {
-              //             isMonthly = value;
-              //           });
-              //         },
-              //       ),
-              //     ),
-              //     const Text("Monthly"),
-              //   ],
-              // )
             ],
           ),
           _expensesCard(context),

@@ -13,6 +13,7 @@ class TransactionsProvider with ChangeNotifier {
   // double spent = 0.00;
   double max = 0.00;
   bool isDataLoaded = false;
+  bool isMonthly = false;
 
   List<Transaction> transactionsSummary = [];
   Map<String, dynamic> transactionsByWeekYear = {};
@@ -67,8 +68,7 @@ class TransactionsProvider with ChangeNotifier {
     AccountProvider.updateAccount(updatedAccount);
   }
 
-  Future<void> fetchTransactionSummary(Account activeAccount,
-      {bool isMonthly = false}) async {
+  Future<void> fetchTransactionSummary(Account activeAccount) async {
     List range = [];
     if (!isMonthly) {
       // Weekly
@@ -120,6 +120,7 @@ class TransactionsProvider with ChangeNotifier {
 
     transactionsSummary = summaryTransactions;
     _fetchTransactionSummaryChartData();
+    notifyListeners();
   }
 
   void _fetchTransactionSummaryChartData() {
@@ -180,6 +181,7 @@ class TransactionsProvider with ChangeNotifier {
     }
 
     transactionsByWeekYear = groupedTransactions;
+    notifyListeners();
   }
 
   Future<List<Map<String, dynamic>>> expensesDataChart() async {

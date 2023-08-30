@@ -1,5 +1,4 @@
 import 'package:expense_tracker/models/account.dart';
-import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/pages/add_transaction_page.dart';
 import 'package:expense_tracker/pages/chart_page.dart';
 import 'package:expense_tracker/pages/home_page.dart';
