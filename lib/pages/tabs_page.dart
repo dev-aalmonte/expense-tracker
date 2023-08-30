@@ -1,8 +1,13 @@
+import 'package:expense_tracker/models/account.dart';
+import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/pages/add_transaction_page.dart';
 import 'package:expense_tracker/pages/chart_page.dart';
 import 'package:expense_tracker/pages/home_page.dart';
 import 'package:expense_tracker/pages/transactions_page.dart';
+import 'package:expense_tracker/providers/account_provider.dart';
+import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TabsPage extends StatefulWidget {
   static const String route = '/tabs';
@@ -17,10 +22,21 @@ class _TabsPageState extends State<TabsPage> {
   int _selectedIndex = 1;
   late PageController _pageController;
 
+  late Account activeAccount;
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: _selectedIndex);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    activeAccount = Provider.of<AccountProvider>(context).activeAccount!;
+    Provider.of<TransactionsProvider>(context)
+        .fetchTransactionSummary(activeAccount);
+    Provider.of<TransactionsProvider>(context).groupByWeekYear();
   }
 
   @override
@@ -55,11 +71,17 @@ class _TabsPageState extends State<TabsPage> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TransactionsPage(),
+              child: TransactionsPage(
+                  transactionsHistory:
+                      Provider.of<TransactionsProvider>(context)
+                          .transactionsByWeekYear),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: HomePage(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: HomePage(
+                  transactionsSummary:
+                      Provider.of<TransactionsProvider>(context)
+                          .transactionsSummary),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),

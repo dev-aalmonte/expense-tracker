@@ -5,8 +5,9 @@ import 'package:provider/provider.dart';
 
 class TransactionsPage extends StatelessWidget {
   final DateTime date = DateTime.now();
+  final Map<String, dynamic> transactionsHistory;
 
-  TransactionsPage({super.key});
+  TransactionsPage({super.key, required this.transactionsHistory});
 
   @override
   Widget build(BuildContext context) {
@@ -56,39 +57,13 @@ class TransactionsPage extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: FutureBuilder(
-              future:
-                  Provider.of<TransactionsProvider>(context).groupByWeekYear(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  Map<String, dynamic> groupedTransactions = snapshot.data!;
-                  return ListView.builder(
-                      itemCount: groupedTransactions.length,
-                      itemBuilder: (context, index) {
-                        String key = groupedTransactions.keys.elementAt(index);
-                        return Card(
-                          child: TransactionItem(
-                            groupTransaction: groupedTransactions[key],
-                          ),
-                        );
-                      });
-                }
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Sorry, no data to be shown!",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      )
-                    ],
+            child: ListView.builder(
+              itemCount: transactionsHistory.length,
+              itemBuilder: (context, index) {
+                String key = transactionsHistory.keys.elementAt(index);
+                return Card(
+                  child: TransactionItem(
+                    groupTransaction: transactionsHistory[key],
                   ),
                 );
               },

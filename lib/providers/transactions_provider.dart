@@ -13,20 +13,8 @@ class TransactionsProvider with ChangeNotifier {
   // double spent = 0.00;
   double max = 0.00;
 
-  // List<Transaction> _summaryTransactions = [];
-  // List<Transaction> get summaryTransactions {
-  //   return [..._summaryTransactions];
-  // }
-
-  List<Transaction> _transactions = [];
-  List<Transaction> get transactions {
-    return [..._transactions];
-  }
-
-  // Map<String, dynamic> _groupedTransactions = {};
-  // Map<String, dynamic> get groupedTransactions {
-  //   return {..._groupedTransactions};
-  // }
+  List<Transaction> transactionsSummary = [];
+  Map<String, dynamic> transactionsByWeekYear = {};
 
   Future<void> deleteData() async {
     await DBHelper.clearData();
@@ -77,7 +65,7 @@ class TransactionsProvider with ChangeNotifier {
     AccountProvider.updateAccount(updatedAccount);
   }
 
-  Future<List<Transaction>> fetchTransactionSummary(Account activeAccount,
+  Future<void> fetchTransactionSummary(Account activeAccount,
       {bool isMonthly = false}) async {
     List range = [];
     if (!isMonthly) {
@@ -103,10 +91,11 @@ class TransactionsProvider with ChangeNotifier {
 
     final dataList = await DBHelper.fetchWhereMultiple('transactions', [
       DBWhere(
-          column: 'date',
-          operation: WhereOperation.between,
-          value: range,
-          chain: WhereChain.and),
+        column: 'date',
+        operation: WhereOperation.between,
+        value: range,
+        chain: WhereChain.and,
+      ),
       DBWhere(
         column: 'account_id',
         operation: WhereOperation.equal,
@@ -127,7 +116,7 @@ class TransactionsProvider with ChangeNotifier {
       ));
     }
 
-    return summaryTransactions;
+    transactionsSummary = summaryTransactions;
   }
 
   Future<List<Transaction>> fetchTransactions() async {
@@ -149,7 +138,7 @@ class TransactionsProvider with ChangeNotifier {
     return transactions;
   }
 
-  Future<Map<String, dynamic>> groupByWeekYear() async {
+  Future<void> groupByWeekYear() async {
     List<Transaction> transactions = await fetchTransactions();
     Map<String, dynamic> groupedTransactions = {};
 
@@ -172,11 +161,12 @@ class TransactionsProvider with ChangeNotifier {
       groupedTransactions[key]['transactions'].add(transaction);
     }
 
-    return groupedTransactions;
+    transactionsByWeekYear = groupedTransactions;
   }
 
   Future<List<Map<String, dynamic>>> expensesDataChart() async {
-    Map<String, dynamic> groupedTransactions = await groupByWeekYear();
+    await groupByWeekYear();
+    Map<String, dynamic> groupedTransactions = transactionsByWeekYear;
     List<Map<String, dynamic>> expensesData = [];
     int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
     int year = Jiffy.parseFromDateTime(DateTime.now()).year;
@@ -210,7 +200,8 @@ class TransactionsProvider with ChangeNotifier {
 
   Future<Map<Categories, double>?> expensesCategoryDataChart(
       DateTimeRange? dateRange) async {
-    Map<String, dynamic> groupedTransactions = await groupByWeekYear();
+    await groupByWeekYear();
+    Map<String, dynamic> groupedTransactions = transactionsByWeekYear;
     Map<Categories, double> expensesCategoryData = {};
     late int startWeekYear;
     late int endWeekYear;

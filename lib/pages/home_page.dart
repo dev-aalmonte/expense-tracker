@@ -9,7 +9,9 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final List<Transaction> transactionsSummary;
+
+  const HomePage({super.key, required this.transactionsSummary});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -99,25 +101,19 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: FutureBuilder(
-                future: Provider.of<TransactionsProvider>(context)
-                    .fetchTransactionSummary(activeAccount),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    List<Transaction> transactions = snapshot.data!;
-                    return ListView.builder(
-                      itemCount:
-                          transactions.length > 4 ? 4 : transactions.length,
+              child: widget.transactionsSummary.isEmpty
+                  ? _noDataWidget(context)
+                  : ListView.builder(
+                      itemCount: widget.transactionsSummary.length > 4
+                          ? 4
+                          : widget.transactionsSummary.length,
                       itemBuilder: (context, index) => _recentTransactions(
-                          transactionType: transactions[index].type,
-                          category: transactions[index].category,
-                          amount: transactions[index].amount,
-                          date: transactions[index].date),
-                    );
-                  }
-                  return _noDataWidget(context);
-                },
-              ),
+                        transactionType: widget.transactionsSummary[index].type,
+                        category: widget.transactionsSummary[index].category,
+                        amount: widget.transactionsSummary[index].amount,
+                        date: widget.transactionsSummary[index].date,
+                      ),
+                    ),
             ),
           ],
         ),
