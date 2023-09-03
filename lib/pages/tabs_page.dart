@@ -38,7 +38,7 @@ class _TabsPageState extends State<TabsPage> {
         Provider.of<TransactionsProvider>(context, listen: false)
             .fetchTransactionSummary(activeAccount),
         Provider.of<TransactionsProvider>(context, listen: false)
-            .groupByWeekYear()
+            .groupByWeekYear(activeAccount)
       ]).then((_) {
         Provider.of<TransactionsProvider>(context, listen: false).isDataLoaded =
             true;

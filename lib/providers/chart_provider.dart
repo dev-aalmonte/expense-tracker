@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/providers/account_provider.dart';
 import 'package:expense_tracker/providers/transactions_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +20,10 @@ class ChartProvider with ChangeNotifier {
 
   void fetchExpensesChart() async {
     TransactionsProvider transactionsProvider = TransactionsProvider();
+    AccountProvider accountProvider = AccountProvider();
     _expensesChart = [];
-    var dataChart = await transactionsProvider.expensesDataChart();
+    var dataChart = await transactionsProvider
+        .expensesDataChart(accountProvider.activeAccount!);
     for (var data in dataChart) {
       maxBarChartValue =
           max(max(data['deposit'], data['spent']), maxBarChartValue);

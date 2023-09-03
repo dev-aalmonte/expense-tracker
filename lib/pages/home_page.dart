@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                   transactionsProvider.resetData();
                   Future.wait([
                     transactionsProvider.fetchTransactionSummary(value!),
-                    transactionsProvider.groupByWeekYear()
+                    transactionsProvider.groupByWeekYear(value)
                   ]).then((_) {
                     transactionsProvider.isDataLoaded = true;
                     setState(() {});

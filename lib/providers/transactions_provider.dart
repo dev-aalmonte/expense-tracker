@@ -78,6 +78,7 @@ class TransactionsProvider with ChangeNotifier {
     AccountProvider.updateAccount(updatedAccount);
   }
 
+  // Transaction Summary
   Future<void> fetchTransactionSummary(Account activeAccount) async {
     List range = [];
     if (!isMonthly) {
@@ -148,8 +149,9 @@ class TransactionsProvider with ChangeNotifier {
     }
   }
 
-  Future<List<Transaction>> fetchTransactions() async {
-    final dataList = await DBHelper.getData('transactions');
+  Future<List<Transaction>> fetchTransactions(Account activeAccount) async {
+    final dataList = await DBHelper.fetchWhere(
+        'transactions', 'account_id', activeAccount.id);
 
     List<Transaction> transactions = [];
 
@@ -167,8 +169,8 @@ class TransactionsProvider with ChangeNotifier {
     return transactions;
   }
 
-  Future<void> groupByWeekYear() async {
-    List<Transaction> transactions = await fetchTransactions();
+  Future<void> groupByWeekYear(Account activeAccount) async {
+    List<Transaction> transactions = await fetchTransactions(activeAccount);
     Map<String, dynamic> groupedTransactions = {};
 
     for (var transaction in transactions) {
@@ -194,8 +196,9 @@ class TransactionsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> expensesDataChart() async {
-    await groupByWeekYear();
+  Future<List<Map<String, dynamic>>> expensesDataChart(
+      Account activeAccount) async {
+    await groupByWeekYear(activeAccount);
     Map<String, dynamic> groupedTransactions = transactionsByWeekYear;
     List<Map<String, dynamic>> expensesData = [];
     int weekYear = Jiffy.parseFromDateTime(DateTime.now()).weekOfYear;
@@ -229,8 +232,8 @@ class TransactionsProvider with ChangeNotifier {
   }
 
   Future<Map<Categories, double>?> expensesCategoryDataChart(
-      DateTimeRange? dateRange) async {
-    await groupByWeekYear();
+      Account activeAccount, DateTimeRange? dateRange) async {
+    await groupByWeekYear(activeAccount);
     Map<String, dynamic> groupedTransactions = transactionsByWeekYear;
     Map<Categories, double> expensesCategoryData = {};
     late int startWeekYear;
